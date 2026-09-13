@@ -1,2 +1,4 @@
 /Backend/obj/*
 /Backend/bin/*
+/.env
+/api/*
