@@ -1,0 +1,13 @@
+---
+import type { HTMLTag, Polymorphic } from 'astro/types';
+import Flex from './Flex.astro';
+import type { FlexStyleProps } from './flex-utils';
+
+type Props<Tag extends HTMLTag = 'div'> = Polymorphic<{ as: Tag }> & Omit<FlexStyleProps, 'direction'>;
+
+const props = Astro.props;
+---
+
+<Flex direction="column" {...props}>
+  <slot />
+</Flex>

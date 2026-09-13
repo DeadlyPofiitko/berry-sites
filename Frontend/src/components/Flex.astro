@@ -1,0 +1,107 @@
+---
+import type { HTMLTag, Polymorphic } from 'astro/types';
+import { getFlexStyles, stylesToString, type FlexStyleProps } from './flex-utils';
+
+type Props<Tag extends HTMLTag = 'div'> = Polymorphic<{ as: Tag }> & FlexStyleProps;
+
+const {
+  as: Tag = 'div',
+  direction,
+  justify,
+  align,
+  wrap,
+  gap,
+  rowGap,
+  columnGap,
+  inline,
+  grow,
+  shrink,
+  basis,
+  w,
+  width,
+  h,
+  height,
+  miw,
+  minWidth,
+  maw,
+  maxWidth,
+  mih,
+  minHeight,
+  mah,
+  maxHeight,
+  p,
+  padding,
+  pt,
+  pb,
+  pl,
+  pr,
+  px,
+  py,
+  m,
+  margin,
+  mt,
+  mb,
+  ml,
+  mr,
+  mx,
+  my,
+  style: customStyle,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const flexStyles = getFlexStyles({
+  direction,
+  justify,
+  align,
+  wrap,
+  gap,
+  rowGap,
+  columnGap,
+  inline,
+  grow,
+  shrink,
+  basis,
+  w,
+  width,
+  h,
+  height,
+  miw,
+  minWidth,
+  maw,
+  maxWidth,
+  mih,
+  minHeight,
+  mah,
+  maxHeight,
+  p,
+  padding,
+  pt,
+  pb,
+  pl,
+  pr,
+  px,
+  py,
+  m,
+  margin,
+  mt,
+  mb,
+  ml,
+  mr,
+  mx,
+  my,
+});
+
+const generatedStyleStr = stylesToString(flexStyles);
+
+const combinedStyle =
+  typeof customStyle === 'string'
+    ? `${generatedStyleStr}; ${customStyle}`
+    : typeof customStyle === 'object' && customStyle !== null
+    ? { ...flexStyles, ...customStyle }
+    : generatedStyleStr;
+---
+
+<Tag style={combinedStyle} class={className} {...rest}>
+  <slot />
+</Tag>

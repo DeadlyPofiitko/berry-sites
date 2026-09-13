@@ -1,0 +1,82 @@
+---
+import Nav from '../components/Nav';
+import ToastContainer from '../components/ToastContainer';
+
+interface Props {
+	title?: string;
+	showNav?: boolean;
+}
+
+const { title = 'Berry 26', showNav = true } = Astro.props;
+const currentPath = Astro.url.pathname;
+const { locale = 'en', isDomainScoped = false } = Astro.locals;
+---
+
+<!doctype html>
+<html lang={locale}>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		{showNav && (
+			<Nav
+				client:load
+				currentPath={currentPath}
+				locale={locale}
+				isDomainScoped={isDomainScoped}
+			/>
+		)}
+		<slot />
+		<ToastContainer client:load />
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--white-color: #ffffff;
+		--black-color: #2D2D23;
+		--main-blue-color: #3F2DCC;
+		--secondary-blue-color: #6475F2;
+	}
+	@font-face {
+		font-family: "Ronzino-Bold";
+		src: url("/fonts/Ronzino-Bold.otf") format("opentype");
+		font-weight: 700;
+		font-style: normal;
+	}
+
+	@font-face {
+		font-family: "Ronzino-Medium";
+		src: url("/fonts/Ronzino-Medium.otf") format("opentype");
+		font-weight: 400;
+		font-style: normal;
+	}
+	@font-face {
+		font-family: "ClashDisplay-Bold";
+		src: url("/fonts/ClashDisplay-Bold.otf") format("opentype");
+		font-weight: 700;
+		font-style: normal;
+	}
+	html {
+		scroll-behavior: smooth;
+	}
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+	h1, h2, h3, h4, h5, h6 {
+		font-family: "Ronzino-Bold";
+		color: var(--main-blue-color)
+	}
+	p {
+		color: var(--black-color);
+		font-family: "Ronzino-Medium";
+	}
+</style>

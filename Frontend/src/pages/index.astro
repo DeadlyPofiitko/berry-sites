@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Flex from '../components/Flex';
+import Stack from '../components/Stack';
+---
+
+<Layout>
+	<Flex align="end" justify="start" h="100vh">
+		<h1>Berry26</h1>
+	</Flex>
+	<Stack ml="20rem" maw="55rem">
+		<h2 id="about">Karolína Stella Zímová<br>aka<br>Berry26</h2>
+		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto, aperiam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ducimus blanditiis officiis voluptas maiores debitis illum veniam ipsam beatae ullam facere. Nulla dicta facere ea pariatur exercitationem eaque non amet nisi.</p>
+	</Stack>
+</Layout>
+
+<style>
+	h1 {
+		margin-top: 0;
+		color: var(--main-blue-color);
+		font-family: "ClashDisplay-Bold";
+		text-transform: uppercase;
+		margin-left: 2.5rem;
+		margin-bottom: 3rem;
+		font-size: 12.5rem;
+		line-height: 12.5rem;
+	}
+	h2 {
+		font-size: 5rem;
+		margin-bottom: 0;
+	}
+	p {
+		font-size: 2.5rem;
+		margin-bottom: 10rem;
+	}
+</style>

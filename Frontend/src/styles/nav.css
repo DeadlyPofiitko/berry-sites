@@ -1,0 +1,44 @@
+.box {
+    background-color: var(--main-blue-color);
+    width: 20px;
+    height: 15px;
+    transition: transform 0.2s ease;
+}
+
+.nav-btn:hover .box {
+    animation: typing 0.8s ease-in-out 2;
+}
+
+.nav-btn:hover .box-one {
+    animation-delay: 0s;
+}
+
+.nav-btn:hover .box-two {
+    animation-delay: 0.15s;
+}
+
+.nav-btn:hover .box-three {
+    animation-delay: 0.3s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-8px);
+    }
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--main-blue-color);
+    font-family: 'Ronzino-Medium';
+    font-size: 3rem;
+}
+
+.nav-link:hover,
+.nav-link.active,
+.nav-link[aria-current="page"] {
+    color: var(--secondary-blue-color);
+}

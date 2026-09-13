@@ -1,0 +1,22 @@
+---
+import GoogleAuthButton from '../components/GoogleAuthButton';
+import Stack from '../components/Stack';
+import Layout from '../layouts/Layout.astro';
+
+const GOOGLE_CLIENT_ID = import.meta.env.PUBLIC_GOOGLE_ID;
+console.log(GOOGLE_CLIENT_ID)
+---
+<Layout>
+    <Stack align="center" mt="25vh">
+        <h1 class="title">Sign in to continue</h1>
+        <GoogleAuthButton client:load clientId={GOOGLE_CLIENT_ID} />
+    </Stack>
+</Layout>
+<style>
+    h1.title{
+        color: var(--black-color);
+        font-size: 32px;
+        font-family: "Ronzino-Bold";
+        padding: 50px 0 25px 0;
+    }
+</style>
