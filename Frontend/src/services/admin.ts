@@ -1,6 +1,6 @@
 // src/services/admin.ts
 import { notifyError, notifySuccess } from "../stores/notification";
-import { API_BASE_URL, getApiBaseUrl } from "./auth";
+import { getApiBaseUrl } from "./auth";
 
 export interface AdminUser {
   email: string;
