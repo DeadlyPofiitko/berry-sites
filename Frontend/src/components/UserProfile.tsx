@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getCurrentUser, logoutUser, type UserProfile as UserProfileType } from '../services/auth';
+import { clearAuthState } from '../stores/auth';
 import { Avatar, Button } from './ui';
 import './UserProfile.css';
 
@@ -55,6 +56,7 @@ export const UserProfile: React.FC = () => {
     setLoggingOut(true);
     try {
       await logoutUser();
+      clearAuthState();
       try {
         localStorage.removeItem('auth_token');
       } catch {}
