@@ -116,7 +116,7 @@ public class AuthController : ControllerBase
         Response.Cookies.Append("auth_token", token, new CookieOptions
         {
             HttpOnly = true,
-            Secure = false, // Set to true in production (HTTPS)
+            Secure = _config["MODE"] == "prod", // Set to true in production (HTTPS)
             SameSite = SameSiteMode.Lax,
             Expires = DateTimeOffset.UtcNow.AddDays(7)
         });

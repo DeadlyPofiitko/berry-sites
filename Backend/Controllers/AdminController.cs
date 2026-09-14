@@ -64,6 +64,8 @@ public class AdminController(
     {
         var admin = await appDbContext.Admins.FirstOrDefaultAsync(x => x.Email == dto.Email)
             ?? throw new DomainException("Unknown Admin", 400);
+        if (admin.Id == AdminId)
+            throw new DomainException("Cannot delete yourself", 400);
         appDbContext.Admins.Remove(admin);
         await appDbContext.SaveChangesAsync();
 

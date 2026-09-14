@@ -49,7 +49,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:4321",    // Astro dev server default
-                "http://127.0.0.1:4321"
+                "http://127.0.0.1:4321",
+                "https://berry26.cz",
+                "https://berry26.com"
               )
               .AllowAnyHeader()
               .AllowAnyMethod()
