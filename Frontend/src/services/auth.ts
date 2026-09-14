@@ -5,8 +5,34 @@
 
 import { notifyError } from '../stores/notification';
 
-export const API_BASE_URL =
-  import.meta.env.PUBLIC_API_URL || 'http://localhost:5294';
+/**
+ * Returns the base URL for API requests.
+ * In production on the client side, dynamically uses the current client domain (window.location.origin).
+ * In dev or SSR, falls back to PUBLIC_API_URL or http://localhost:5294.
+ */
+export function getApiBaseUrl(): string {
+  if (import.meta.env.PROD && typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin.replace(/\/+$/, '');
+  }
+  return (import.meta.env.PUBLIC_API_URL || 'http://localhost:5294').replace(/\/+$/, '');
+}
+
+/**
+ * Dynamic API_BASE_URL proxy that evaluates getApiBaseUrl() at runtime.
+ */
+export const API_BASE_URL = new Proxy(Object(''), {
+  get(_target, prop) {
+    const current = getApiBaseUrl();
+    if (prop === Symbol.toPrimitive || prop === 'toString' || prop === 'valueOf') {
+      return () => current;
+    }
+    const val = (current as any)[prop];
+    if (typeof val === 'function') {
+      return val.bind(current);
+    }
+    return val;
+  },
+}) as unknown as string;
 
 export interface GoogleCredentialPayload {
   JWT: string;
@@ -31,7 +57,8 @@ export async function sendAuthPayload<T = unknown>(
   payload: Record<string, unknown>
 ): Promise<AuthResponse<T>> {
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
-  const url = `${API_BASE_URL}/${normalizedEndpoint}`;
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}/${normalizedEndpoint}`;
   try {
     const res = await fetch(url, {
       method: 'POST',
@@ -114,3 +141,57 @@ export async function sendGoogleCode<T = unknown>(code: string): Promise<AuthRes
   const payload: GoogleCodePayload = { code };
   return sendAuthPayload<T>('auth/login', payload as unknown as Record<string, unknown>);
 }
+
+export interface UserProfile {
+  name: string;
+  email: string;
+  picture: string;
+}
+
+/**
+ * Fetches current authenticated user profile from /admin/me.
+ * Returns null if unauthorized or failed.
+ */
+export async function getCurrentUser(): Promise<UserProfile | null> {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/admin/me`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    const data = (await res.json()) as UserProfile;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Calls /auth/logout to clear the session cookie.
+ */
+export async function logoutUser(): Promise<boolean> {
+  try {
+    const baseUrl = getApiBaseUrl();
+    let res = await fetch(`${baseUrl}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+
+    // Fallback if backend expects GET for logout
+    if (res.status === 405) {
+      res = await fetch(`${baseUrl}/auth/logout`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+    }
+
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+

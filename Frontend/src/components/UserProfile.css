@@ -1,0 +1,51 @@
+/* Mantine-styled UserProfile Top Header Bar */
+.user-profile-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  width: 100%;
+  height: 4.25rem;
+  padding: 0 1.5rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--mantine-gray-2, #e9ecef);
+  box-shadow: var(--mantine-shadow-xs, 0 1px 3px rgba(0, 0, 0, 0.05));
+  box-sizing: border-box;
+  font-family: var(--mantine-font-family, 'Ronzino-Medium', sans-serif);
+}
+
+.user-profile-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-profile-bar__details {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.user-profile-bar__name {
+  font-family: 'Ronzino-Bold', inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--black-color, var(--mantine-gray-9, #212529));
+}
+
+.user-profile-bar__email {
+  font-family: 'Ronzino-Medium', inherit;
+  font-size: 0.8125rem;
+  color: var(--mantine-gray-6, #868e96);
+}
+
+.user-profile-bar__actions {
+  display: flex;
+  align-items: center;
+}

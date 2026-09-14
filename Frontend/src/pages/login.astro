@@ -2,11 +2,13 @@
 import GoogleAuthButton from '../components/GoogleAuthButton';
 import Stack from '../components/Stack';
 import Layout from '../layouts/Layout.astro';
+import AuthRedirect from '../components/AuthRedirect';
 
 const GOOGLE_CLIENT_ID = import.meta.env.PUBLIC_GOOGLE_ID;
-console.log(GOOGLE_CLIENT_ID)
+
 ---
 <Layout>
+  <AuthRedirect client:load />
     <Stack align="center" mt="25vh">
         <h1 class="title">Sign in to continue</h1>
         <GoogleAuthButton client:load clientId={GOOGLE_CLIENT_ID} />

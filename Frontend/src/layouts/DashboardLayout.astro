@@ -1,0 +1,22 @@
+---
+import Layout from './Layout.astro';
+import UserProfile from '../components/UserProfile';
+import type { NavItem } from '../components/Nav';
+
+interface Props {
+  title?: string;
+  links?: NavItem[];
+}
+
+const defaultDashboardLinks: NavItem[] = [
+  { href: "/", label: "home"},
+  { href: '/dashboard/admin', label: 'admin' },
+];
+
+const { title = 'Dashboard - Berry 26', links = defaultDashboardLinks } = Astro.props;
+---
+
+<Layout title={title} navLinks={links} navTop="1rem">
+  <UserProfile client:load />
+  <slot />
+</Layout>

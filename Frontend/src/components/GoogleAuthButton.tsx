@@ -15,7 +15,7 @@ export interface GoogleAuthButtonProps {
 }
 
 function LoginButton({
-  redirectUrl = '/dashboard',
+  redirectUrl = '/dashboard/admin',
   onSuccess,
   onError,
 }: Omit<GoogleAuthButtonProps, 'clientId'>) {
@@ -179,7 +179,7 @@ function LoginButton({
 
 export default function GoogleAuthButton({
   clientId,
-  redirectUrl = '/dashboard',
+  redirectUrl = '/dashboard/admin',
   onSuccess,
   onError,
 }: GoogleAuthButtonProps) {

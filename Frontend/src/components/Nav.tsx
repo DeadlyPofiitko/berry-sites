@@ -3,14 +3,30 @@ import "../styles/nav.css";
 import Link from './Link';
 import { NavContext } from './nav-context';
 
+export interface NavItem {
+  href: string;
+  label: string;
+}
+
 export interface NavProps {
   currentPath?: string;
   locale?: string;
   isDomainScoped?: boolean;
+  links?: NavItem[];
+  top?: string;
 }
 
-export const Nav: React.FC<NavProps> = ({ currentPath, locale, isDomainScoped }) => {
+const defaultNavLinks: NavItem[] = [
+  { href: '/#about', label: 'about' },
+  { href: '/comics', label: 'comics' },
+  { href: '/illustration', label: 'illustration' },
+  { href: '/process', label: 'process' },
+  { href: '/contact', label: 'contact' },
+];
+
+export const Nav: React.FC<NavProps> = ({ currentPath, locale, isDomainScoped, links, top }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const activeLinks = links && links.length > 0 ? links : defaultNavLinks;
 
   return (
     <NavContext.Provider value={{ currentPath, locale, isDomainScoped }}>
@@ -20,7 +36,7 @@ export const Nav: React.FC<NavProps> = ({ currentPath, locale, isDomainScoped })
         onClick={() => setIsOpen((prev) => !prev)}
         style={{
           position: 'fixed',
-          top: '1.5rem',
+          top: top || '1rem',
           left: '1rem',
           zIndex: 1000,
           backgroundColor: 'var(--white-color)',
@@ -56,11 +72,16 @@ export const Nav: React.FC<NavProps> = ({ currentPath, locale, isDomainScoped })
           gap: '1rem',
         }}
       >
-        <Link href="/#about" className="nav-link" onClick={() => setIsOpen(false)}>about</Link>
-        <Link href="/comics" className="nav-link" onClick={() => setIsOpen(false)}>comics</Link>
-        <Link href="/illustration" className="nav-link" onClick={() => setIsOpen(false)}>illustration</Link>
-        <Link href="/process" className="nav-link" onClick={() => setIsOpen(false)}>process</Link>
-        <Link href="/contact" className="nav-link" onClick={() => setIsOpen(false)}>contact</Link>
+        {activeLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="nav-link"
+            onClick={() => setIsOpen(false)}
+          >
+            {link.label}
+          </Link>
+        ))}
       </aside>
     </NavContext.Provider>
   );
