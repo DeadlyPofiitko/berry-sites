@@ -1,0 +1,46 @@
+/* Mantine-styled Avatar Component */
+.mantine-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1;
+  background-color: var(--mantine-primary-0, #f0eeff);
+  color: var(--mantine-primary-6, #3f2dcc);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.mantine-avatar--size-xs { width: 24px; height: 24px; font-size: 11px; }
+.mantine-avatar--size-sm { width: 32px; height: 32px; font-size: 13px; }
+.mantine-avatar--size-md { width: 40px; height: 40px; font-size: 15px; }
+.mantine-avatar--size-lg { width: 52px; height: 52px; font-size: 18px; }
+.mantine-avatar--size-xl { width: 68px; height: 68px; font-size: 22px; }
+
+.mantine-avatar--radius-xs { border-radius: var(--mantine-radius-xs, 2px); }
+.mantine-avatar--radius-sm { border-radius: var(--mantine-radius-sm, 4px); }
+.mantine-avatar--radius-md { border-radius: var(--mantine-radius-md, 8px); }
+.mantine-avatar--radius-lg { border-radius: var(--mantine-radius-lg, 16px); }
+.mantine-avatar--radius-xl { border-radius: var(--mantine-radius-xl, 32px); }
+.mantine-avatar--radius-full { border-radius: 9999px; }
+
+.mantine-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mantine-avatar__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-transform: uppercase;
+}

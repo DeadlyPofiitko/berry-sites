@@ -1,0 +1,68 @@
+/* Mantine-styled Badge Component */
+.mantine-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.25px;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.mantine-badge--size-xs { height: 16px; padding: 0 6px; font-size: 9px; border-radius: 9999px; }
+.mantine-badge--size-sm { height: 20px; padding: 0 8px; font-size: 10px; border-radius: 9999px; }
+.mantine-badge--size-md { height: 24px; padding: 0 10px; font-size: 11px; border-radius: 9999px; }
+.mantine-badge--size-lg { height: 28px; padding: 0 12px; font-size: 13px; border-radius: 9999px; }
+
+/* Variants: Light */
+.mantine-badge--variant-light.mantine-badge--color-blue {
+  background-color: var(--mantine-primary-0, #f0eeff);
+  color: var(--mantine-primary-6, #3f2dcc);
+}
+.mantine-badge--variant-light.mantine-badge--color-green {
+  background-color: var(--mantine-green-0, #ebfbee);
+  color: var(--mantine-green-7, #37b24d);
+}
+.mantine-badge--variant-light.mantine-badge--color-red {
+  background-color: var(--mantine-red-0, #fff5f5);
+  color: var(--mantine-red-7, #f03e3e);
+}
+.mantine-badge--variant-light.mantine-badge--color-gray {
+  background-color: var(--mantine-gray-1, #f1f3f5);
+  color: var(--mantine-gray-7, #495057);
+}
+
+/* Variants: Filled */
+.mantine-badge--variant-filled.mantine-badge--color-blue {
+  background-color: var(--mantine-primary-6, #3f2dcc);
+  color: #ffffff;
+}
+.mantine-badge--variant-filled.mantine-badge--color-green {
+  background-color: var(--mantine-green-6, #40c057);
+  color: #ffffff;
+}
+.mantine-badge--variant-filled.mantine-badge--color-red {
+  background-color: var(--mantine-red-6, #fa5252);
+  color: #ffffff;
+}
+.mantine-badge--variant-filled.mantine-badge--color-gray {
+  background-color: var(--mantine-gray-7, #495057);
+  color: #ffffff;
+}
+
+/* Variants: Outline */
+.mantine-badge--variant-outline.mantine-badge--color-blue {
+  border: 1px solid var(--mantine-primary-6, #3f2dcc);
+  color: var(--mantine-primary-6, #3f2dcc);
+  background: transparent;
+}
+.mantine-badge--variant-outline.mantine-badge--color-gray {
+  border: 1px solid var(--mantine-gray-4, #ced4da);
+  color: var(--mantine-gray-7, #495057);
+  background: transparent;
+}

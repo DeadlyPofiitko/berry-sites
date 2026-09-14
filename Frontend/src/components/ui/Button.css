@@ -1,0 +1,289 @@
+/* Mantine-styled Button Component */
+.mantine-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 600;
+  border-radius: var(--mantine-radius-sm, 6px);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  box-sizing: border-box;
+  vertical-align: middle;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+  line-height: 1;
+  white-space: nowrap;
+  font-family: 'Ronzino-Medium';
+}
+
+.mantine-button:focus-visible {
+  outline: 2px solid var(--mantine-primary-6, #3f2dcc);
+  outline-offset: 2px;
+}
+
+.mantine-button:active:not(:disabled):not(.mantine-button--loading) {
+  transform: translateY(1px);
+}
+
+.mantine-button--full-width {
+  display: flex;
+  width: 100%;
+}
+
+/* Sizes */
+.mantine-button--size-xs {
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.mantine-button--size-sm {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.mantine-button--size-md {
+  height: 42px;
+  padding: 0 18px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.mantine-button--size-lg {
+  height: 50px;
+  padding: 0 22px;
+  font-size: 16px;
+  gap: 12px;
+}
+
+.mantine-button--size-xl {
+  height: 60px;
+  padding: 0 26px;
+  font-size: 18px;
+  gap: 14px;
+}
+
+/* Radii */
+.mantine-button--radius-xs { border-radius: var(--mantine-radius-xs, 2px); }
+.mantine-button--radius-sm { border-radius: var(--mantine-radius-sm, 4px); }
+.mantine-button--radius-md { border-radius: var(--mantine-radius-md, 8px); }
+.mantine-button--radius-lg { border-radius: var(--mantine-radius-lg, 16px); }
+.mantine-button--radius-xl { border-radius: var(--mantine-radius-xl, 32px); }
+.mantine-button--radius-full { border-radius: 9999px; }
+
+/* Variants: Filled */
+.mantine-button--variant-filled.mantine-button--color-blue {
+  background-color: var(--mantine-primary-6, #3f2dcc);
+  color: #ffffff;
+}
+.mantine-button--variant-filled.mantine-button--color-blue:hover:not(:disabled) {
+  background-color: var(--mantine-primary-7, #3424ad);
+}
+
+.mantine-button--variant-filled.mantine-button--color-red {
+  background-color: var(--mantine-red-6, #fa5252);
+  color: #ffffff;
+}
+.mantine-button--variant-filled.mantine-button--color-red:hover:not(:disabled) {
+  background-color: var(--mantine-red-7, #f03e3e);
+}
+
+.mantine-button--variant-filled.mantine-button--color-green {
+  background-color: var(--mantine-green-6, #40c057);
+  color: #ffffff;
+}
+.mantine-button--variant-filled.mantine-button--color-green:hover:not(:disabled) {
+  background-color: var(--mantine-green-7, #37b24d);
+}
+
+.mantine-button--variant-filled.mantine-button--color-gray {
+  background-color: var(--mantine-gray-7, #495057);
+  color: #ffffff;
+}
+.mantine-button--variant-filled.mantine-button--color-gray:hover:not(:disabled) {
+  background-color: var(--mantine-gray-8, #343a40);
+}
+
+/* Variants: Light (Mantine Signature) */
+.mantine-button--variant-light.mantine-button--color-blue {
+  background-color: var(--mantine-primary-0, #f0eeff);
+  color: var(--mantine-primary-6, #3f2dcc);
+}
+.mantine-button--variant-light.mantine-button--color-blue:hover:not(:disabled) {
+  background-color: var(--mantine-primary-1, #dfdbfd);
+}
+
+.mantine-button--variant-light.mantine-button--color-red {
+  background-color: var(--mantine-red-0, #fff5f5);
+  color: var(--mantine-red-7, #f03e3e);
+}
+.mantine-button--variant-light.mantine-button--color-red:hover:not(:disabled) {
+  background-color: var(--mantine-red-1, #ffe3e3);
+}
+
+.mantine-button--variant-light.mantine-button--color-green {
+  background-color: var(--mantine-green-0, #ebfbee);
+  color: var(--mantine-green-7, #37b24d);
+}
+.mantine-button--variant-light.mantine-button--color-green:hover:not(:disabled) {
+  background-color: var(--mantine-green-1, #d3f9d8);
+}
+
+.mantine-button--variant-light.mantine-button--color-gray {
+  background-color: var(--mantine-gray-1, #f1f3f5);
+  color: var(--mantine-gray-7, #495057);
+}
+.mantine-button--variant-light.mantine-button--color-gray:hover:not(:disabled) {
+  background-color: var(--mantine-gray-2, #e9ecef);
+}
+
+/* Variants: Outline */
+.mantine-button--variant-outline.mantine-button--color-blue {
+  background-color: transparent;
+  border-color: var(--mantine-primary-6, #3f2dcc);
+  color: var(--mantine-primary-6, #3f2dcc);
+}
+.mantine-button--variant-outline.mantine-button--color-blue:hover:not(:disabled) {
+  background-color: var(--mantine-primary-0, #f0eeff);
+}
+
+.mantine-button--variant-outline.mantine-button--color-red {
+  background-color: transparent;
+  border-color: var(--mantine-red-6, #fa5252);
+  color: var(--mantine-red-6, #fa5252);
+}
+.mantine-button--variant-outline.mantine-button--color-red:hover:not(:disabled) {
+  background-color: var(--mantine-red-0, #fff5f5);
+}
+
+.mantine-button--variant-outline.mantine-button--color-green {
+  background-color: transparent;
+  border-color: var(--mantine-green-6, #40c057);
+  color: var(--mantine-green-6, #40c057);
+}
+.mantine-button--variant-outline.mantine-button--color-green:hover:not(:disabled) {
+  background-color: var(--mantine-green-0, #ebfbee);
+}
+
+.mantine-button--variant-outline.mantine-button--color-gray {
+  background-color: transparent;
+  border-color: var(--mantine-gray-4, #ced4da);
+  color: var(--mantine-gray-8, #343a40);
+}
+.mantine-button--variant-outline.mantine-button--color-gray:hover:not(:disabled) {
+  background-color: var(--mantine-gray-1, #f1f3f5);
+}
+
+/* Variants: Subtle */
+.mantine-button--variant-subtle {
+  background-color: transparent;
+}
+.mantine-button--variant-subtle.mantine-button--color-blue {
+  color: var(--mantine-primary-6, #3f2dcc);
+}
+.mantine-button--variant-subtle.mantine-button--color-blue:hover:not(:disabled) {
+  background-color: var(--mantine-primary-0, #f0eeff);
+}
+
+.mantine-button--variant-subtle.mantine-button--color-red {
+  color: var(--mantine-red-6, #fa5252);
+}
+.mantine-button--variant-subtle.mantine-button--color-red:hover:not(:disabled) {
+  background-color: var(--mantine-red-0, #fff5f5);
+}
+
+.mantine-button--variant-subtle.mantine-button--color-gray {
+  color: var(--mantine-gray-7, #495057);
+}
+.mantine-button--variant-subtle.mantine-button--color-gray:hover:not(:disabled) {
+  background-color: var(--mantine-gray-1, #f1f3f5);
+}
+
+/* Variants: Default (Mantine standard border button) */
+.mantine-button--variant-default {
+  background-color: #ffffff;
+  border-color: var(--mantine-gray-4, #ced4da);
+  color: var(--mantine-gray-9, #212529);
+  box-shadow: var(--mantine-shadow-xs);
+}
+.mantine-button--variant-default:hover:not(:disabled) {
+  background-color: var(--mantine-gray-0, #f8f9fa);
+  border-color: var(--mantine-gray-5, #adb5bd);
+}
+
+/* Danger variant alias */
+.mantine-button--variant-danger {
+  background-color: var(--mantine-red-6, #fa5252);
+  color: #ffffff;
+}
+.mantine-button--variant-danger:hover:not(:disabled) {
+  background-color: var(--mantine-red-7, #f03e3e);
+}
+
+/* Disabled & Loading states */
+.mantine-button:disabled,
+.mantine-button--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.mantine-button--loading {
+  pointer-events: none;
+}
+
+.mantine-button__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: inherit;
+  height: 100%;
+  overflow: visible;
+}
+
+.mantine-button__label {
+  white-space: nowrap;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  transition: opacity 150ms ease;
+}
+
+.mantine-button__section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mantine-button__loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mantine-button__spinner {
+  animation: mantine-spin 0.8s linear infinite;
+}
+
+@keyframes mantine-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

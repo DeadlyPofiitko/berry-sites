@@ -1,0 +1,20 @@
+/* Mantine-styled Card Component */
+.mantine-card {
+  position: relative;
+  background-color: #ffffff;
+  border-radius: var(--mantine-radius-md, 8px);
+  border: 1px solid var(--mantine-gray-2, #e9ecef);
+  box-shadow: var(--mantine-shadow-xs);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.mantine-card--padding-xs { padding: 10px; }
+.mantine-card--padding-sm { padding: 14px; }
+.mantine-card--padding-md { padding: 20px; }
+.mantine-card--padding-lg { padding: 28px; }
+.mantine-card--padding-xl { padding: 36px; }
+
+.mantine-card--with-border {
+  border: 1px solid var(--mantine-gray-3, #dee2e6);
+}

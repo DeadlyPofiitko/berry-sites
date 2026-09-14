@@ -1,0 +1,81 @@
+/* Mantine Design System CSS Variables */
+:root {
+  /* Mantine Primary Colors (aligned with Berry Sites palette) */
+  --mantine-primary-0: #f0eeff;
+  --mantine-primary-1: #dfdbfd;
+  --mantine-primary-2: #c3bbfb;
+  --mantine-primary-3: #9e91f7;
+  --mantine-primary-4: #7966f3;
+  --mantine-primary-5: #6475f2;
+  --mantine-primary-6: var(--main-blue-color); /* Primary brand */
+  --mantine-primary-7: #3424ad;
+  --mantine-primary-8: #2a1c8f;
+  --mantine-primary-9: #221674;
+
+  /* Mantine Red / Danger */
+  --mantine-red-0: #fff5f5;
+  --mantine-red-1: #ffe3e3;
+  --mantine-red-2: #ffc9c9;
+  --mantine-red-3: #ffa8a8;
+  --mantine-red-4: #ff8787;
+  --mantine-red-5: #ff6b6b;
+  --mantine-red-6: #fa5252;
+  --mantine-red-7: #f03e3e;
+  --mantine-red-8: #e03131;
+  --mantine-red-9: #c92a2a;
+
+  /* Mantine Green / Success */
+  --mantine-green-0: #ebfbee;
+  --mantine-green-1: #d3f9d8;
+  --mantine-green-2: #b2f2bb;
+  --mantine-green-3: #8ce99a;
+  --mantine-green-4: #69db7c;
+  --mantine-green-5: #51cf66;
+  --mantine-green-6: #40c057;
+  --mantine-green-7: #37b24d;
+  --mantine-green-8: #2f9e44;
+  --mantine-green-9: #2b8a3e;
+
+  /* Mantine Grays */
+  --mantine-gray-0: #f8f9fa;
+  --mantine-gray-1: #f1f3f5;
+  --mantine-gray-2: #e9ecef;
+  --mantine-gray-3: #dee2e6;
+  --mantine-gray-4: #ced4da;
+  --mantine-gray-5: #adb5bd;
+  --mantine-gray-6: #868e96;
+  --mantine-gray-7: #495057;
+  --mantine-gray-8: #343a40;
+  --mantine-gray-9: var(--black-color);
+
+  /* Dark mode surface colors */
+  --mantine-dark-0: #c1c2c5;
+  --mantine-dark-1: #a6a7ab;
+  --mantine-dark-2: #909296;
+  --mantine-dark-3: #5c5f66;
+  --mantine-dark-4: #373a40;
+  --mantine-dark-5: #2c2e33;
+  --mantine-dark-6: #25262b;
+  --mantine-dark-7: #1a1b1e;
+  --mantine-dark-8: #141517;
+  --mantine-dark-9: #101113;
+
+  /* Border Radii */
+  --mantine-radius-xs: 2px;
+  --mantine-radius-sm: 4px;
+  --mantine-radius-md: 8px;
+  --mantine-radius-lg: 16px;
+  --mantine-radius-xl: 32px;
+  --mantine-radius-full: 9999px;
+
+  /* Shadows */
+  --mantine-shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --mantine-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0px 10px 15px -5px, rgba(0, 0, 0, 0.04) 0px 7px 7px -5px;
+  --mantine-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --mantine-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --mantine-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Typography */
+  --mantine-font-family: "Ronzino-Medium", "Ronzino-Bold";
+  --mantine-line-height: 1.55;
+}

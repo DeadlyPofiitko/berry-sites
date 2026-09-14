@@ -12,5 +12,5 @@ export default defineConfig({
     integrations: [react()],
     vite: {
         envDir: '..',
-  },
+    },
 });
