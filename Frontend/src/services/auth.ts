@@ -12,7 +12,7 @@ import { notifyError } from '../stores/notification';
  */
 export function getApiBaseUrl(): string {
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.location?.origin) {
-    return window.location.origin.replace(/\/+$/, '').replace("https://", "https://api.");
+    return window.location.origin.replace(/\/+$/, '').replace("https://", "https://api.").replace("www.", "");
   }
   return (import.meta.env.PUBLIC_API_URL || 'http://localhost:5294').replace(/\/+$/, '');
 }
