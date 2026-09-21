@@ -76,6 +76,7 @@ app.UseExceptionHandler();
 app.UseCors(corsPolicyName);
 app.UseRouting();
 app.UseAuthentication();
+app.UseStaticFiles();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapGet("/", () =>
