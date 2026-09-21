@@ -156,9 +156,6 @@ export const AdminPanel: React.FC = () => {
               {admins.length} {admins.length === 1 ? 'admin' : 'admins'}
             </Badge>
           </div>
-          <p className="admin-panel__subtitle">
-            Manage administrative access and permissions for Berry Sites.
-          </p>
         </div>
 
         <Button
@@ -233,7 +230,7 @@ export const AdminPanel: React.FC = () => {
                           leftSection={<TrashIcon />}
                           onClick={() => setDeleteModal({ open: true, email: admin.email })}
                         >
-                          Delete
+                          <span className="admin-panel__delete-text">Delete</span>
                         </Button>
                       </div>
                     </td>

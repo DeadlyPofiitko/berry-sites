@@ -2,6 +2,7 @@
 import "@/styles/mantine-theme.css";
 import Nav, { type NavItem } from '../components/Nav';
 import ToastContainer from '../components/ToastContainer';
+import { getPublicNav } from '../services/nav';
 
 interface Props {
 	title?: string;
@@ -10,9 +11,17 @@ interface Props {
 	navTop?: string;
 }
 
-const { title = 'Berry 26', showNav = true, navLinks, navTop = '1.6rem' } = Astro.props;
+const { title = 'Berry 26', showNav = true, navLinks: propNavLinks, navTop = '1.6rem' } = Astro.props;
 const currentPath = Astro.url.pathname;
 const { locale = 'en', isDomainScoped = false } = Astro.locals;
+
+let navLinks = propNavLinks;
+if (!navLinks && showNav) {
+	const serverNav = await getPublicNav(locale);
+	if (serverNav && serverNav.length > 0) {
+		navLinks = serverNav;
+	}
+}
 ---
 
 <!doctype html>
@@ -39,7 +48,9 @@ const { locale = 'en', isDomainScoped = false } = Astro.locals;
 				top={navTop}
 			/>
 		)}
-		<slot />
+		<main>
+			<slot />
+		</main>
 		<ToastContainer client:load />
 	</body>
 </html>
@@ -79,6 +90,10 @@ const { locale = 'en', isDomainScoped = false } = Astro.locals;
 		width: 100%;
 		/* height: 100%; */
 	}
+	main {
+		margin-left: 0px;
+		transition: margin-left 0.1s ease;
+	}
 	h1, h2, h3, h4, h5, h6 {
 		font-family: "Ronzino-Bold";
 		color: var(--main-blue-color)
@@ -86,5 +101,16 @@ const { locale = 'en', isDomainScoped = false } = Astro.locals;
 	p {
 		color: var(--black-color);
 		font-family: "Ronzino-Medium";
+	}
+
+	@media (min-width: 1200px) {
+		body:has(aside.hide-aside) main {
+			margin-left: 280px;
+		}
+		aside.hide-aside
+		 {
+			transform: translateX(0) !important;
+			padding: 1rem !important;
+		}
 	}
 </style>

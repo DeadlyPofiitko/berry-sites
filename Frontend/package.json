@@ -21,6 +21,7 @@
     "@types/react-dom": "^19.3.0",
     "astro": "^7.3.2",
     "nanostores": "^1.5.3",
+    "photoswipe": "^5.4.4",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

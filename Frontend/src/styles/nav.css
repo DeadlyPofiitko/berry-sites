@@ -1,3 +1,11 @@
+.open-aside {
+    transform: translateX(0);
+}
+
+.close-aside {
+    transform: translateX(-100%);
+}
+
 .box {
     background-color: var(--main-blue-color);
     width: 20px;
@@ -41,4 +49,20 @@
 .nav-link.active,
 .nav-link[aria-current="page"] {
     color: var(--secondary-blue-color);
+}
+
+
+@media (min-width: 1200px) {
+    .hide-btn {
+        display: none !important;
+    }
+    .close-aside.hide-aside {
+        transform: translateX(0) !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .nav-btn {
+        margin: .8rem 0.4rem !important;
+    }
 }

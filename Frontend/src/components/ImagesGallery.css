@@ -1,0 +1,312 @@
+/* ImagesGallery Component Styles */
+
+.images-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Toolbar */
+.images-gallery__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.25rem;
+}
+
+.images-gallery__count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--mantine-gray-7, #495057);
+}
+
+.images-gallery__toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Grid Layout */
+.images-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(120px, 15vw, 210px), 1fr));
+  gap: 1.125rem;
+}
+
+/* Picture Card */
+.images-gallery__card {
+  position: relative;
+  border-radius: var(--mantine-radius-md, 10px);
+  overflow: hidden;
+  background-color: var(--mantine-gray-0, #f8f9fa);
+  border: 1px solid var(--mantine-gray-3, #dee2e6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  aspect-ratio: 1 / 1;
+}
+
+.images-gallery__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  /* border-color: var(--mantine-primary-4, #748ffc); */
+}
+
+/* PhotoSwipe Link Anchor */
+.images-gallery__card-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+}
+
+/* Thumbnail wrapper with checkerboard pattern for transparent PNGs */
+.images-gallery__thumb-wrapper {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.images-gallery__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 240ms ease;
+  display: block;
+}
+
+
+/* Hover Gradient Overlay */
+.images-gallery__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  padding-right: 3rem; /* Give room for bottom right delete button */
+  background: linear-gradient(
+    to top,
+    rgba(15, 23, 42, 0.45) 0%,
+    rgba(15, 23, 42, 0.45) 25%,
+    transparent 25%
+  );
+  opacity: 0;
+  transition: opacity 180ms ease;
+  pointer-events: none;
+}
+
+.images-gallery__card:hover .images-gallery__overlay {
+  opacity: 1;
+}
+
+.images-gallery__image-name {
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.images-gallery__overlay-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+}
+
+.images-gallery__dim-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+}
+
+/* Delete Button (Right Bottom Corner) */
+.images-gallery__delete-btn {
+  position: absolute;
+  bottom: 0.625rem;
+  right: 0.625rem;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  border-radius: 10%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.9;
+}
+
+.images-gallery__card:hover .images-gallery__delete-btn {
+  opacity: 1;
+}
+
+.images-gallery__delete-btn:hover {
+  background-color: #fa5252;
+  border-color: #fa5252;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(250, 82, 82, 0.4);
+}
+
+
+/* Empty State */
+.images-gallery__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3.5rem 1.5rem;
+  border: 2px dashed var(--mantine-gray-3, #dee2e6);
+  border-radius: var(--mantine-radius-md, 8px);
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.images-gallery__empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--mantine-gray-1, #f1f3f5);
+  color: var(--mantine-gray-5, #adb5bd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.images-gallery__empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--mantine-gray-8, #343a40);
+  margin-bottom: 0.375rem;
+}
+
+.images-gallery__empty-desc {
+  font-size: 0.875rem;
+  color: var(--mantine-gray-6, #868e96);
+  max-width: 380px;
+  margin: 0 0 1.25rem 0;
+}
+
+/* Skeletons */
+.images-gallery__skeleton-card {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--mantine-radius-md, 10px);
+  background: linear-gradient(90deg, #f1f3f5 25%, #e9ecef 37%, #f1f3f5 63%);
+  background-size: 400% 100%;
+  animation: imagesGallerySkeleton 1.4s ease infinite;
+}
+
+@keyframes imagesGallerySkeleton {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* Delete Confirmation Modal Content */
+.images-gallery__delete-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.images-gallery__delete-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem;
+  border-radius: var(--mantine-radius-sm, 6px);
+  background-color: var(--mantine-gray-0, #f8f9fa);
+  border: 1px solid var(--mantine-gray-2, #e9ecef);
+}
+
+.images-gallery__delete-preview-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 6px;
+  object-fit: cover;
+  background-color: #ffffff;
+  border: 1px solid var(--mantine-gray-2, #e9ecef);
+  flex-shrink: 0;
+}
+
+.images-gallery__delete-preview-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.images-gallery__delete-filename {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--mantine-gray-9, #212529);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.images-gallery__delete-sub {
+  font-size: 0.75rem;
+  color: var(--mantine-gray-6, #868e96);
+}
+
+.images-gallery__delete-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--mantine-radius-sm, 6px);
+  background-color: var(--mantine-red-0, #fff5f5);
+  border: 1px solid var(--mantine-red-2, #ffc9c9);
+}
+
+.images-gallery__delete-alert-icon {
+  color: var(--mantine-red-6, #fa5252);
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.images-gallery__delete-alert-text {
+  font-size: 0.8125rem;
+  color: var(--mantine-red-9, #c92a2a);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.images-gallery__delete-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.625rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--mantine-gray-2, #e9ecef);
+}

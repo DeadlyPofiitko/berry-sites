@@ -76,6 +76,7 @@ export const UserProfile: React.FC = () => {
     <div className="user-profile-bar">
       <div className="user-profile-bar__info">
           <Avatar
+            className="user-profile-bar__avatar"
             src={user.picture}
             alt={user.name || user.email}
             fallback={userInitial}
@@ -97,9 +98,11 @@ export const UserProfile: React.FC = () => {
           size="xs"
           loading={loggingOut}
           onClick={handleLogout}
-          leftSection={<LogoutIcon />}
         >
-          Logout
+          <div className="user-profile-bar__logout-wrapper">
+            <LogoutIcon />
+            <span className="user-profile-bar__logout">Log out</span> 
+          </div>
         </Button>
       </div>
     </div>

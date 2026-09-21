@@ -2,7 +2,7 @@
 .admin-panel {
   max-width: 1080px;
   margin: 5.5rem auto;
-  padding: 0 1.5rem 3rem 1.5rem;
+  padding: 0 clamp(0.5rem, 3vw, 1.5rem) clamp(1rem, 3vw, 3rem) clamp(0.5rem, 3vw, 1.5rem);
   font-family: var(--mantine-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
   color: var(--mantine-gray-9, #212529);
 }
@@ -38,13 +38,6 @@
   letter-spacing: -0.3px;
 }
 
-.admin-panel__subtitle {
-  font-size: 0.875rem;
-  color: var(--mantine-gray-6, #868e96);
-  margin: 0.35rem 0 0 0;
-}
-
-
 /* Table */
 .admin-panel__table-wrapper {
   overflow-x: auto;
@@ -59,7 +52,7 @@
 }
 
 .admin-panel__table th {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem clamp(0.4rem, 3vw, 1.5rem);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -71,7 +64,7 @@
 }
 
 .admin-panel__table td {
-  padding: 1rem 1.25rem;
+  padding: clamp(0.2rem, 3vw, 1rem) clamp(0.4rem, 3vw, 1.5rem);
   border-bottom: 1px solid var(--mantine-gray-1, #f1f3f5);
   vertical-align: middle;
   color: var(--mantine-gray-8, #343a40);
@@ -226,4 +219,14 @@
   font-size: 0.875rem;
   color: var(--mantine-red-9, #c92a2a);
   line-height: 1.45;
+}
+
+
+@media (max-width: 340px) {
+  .admin-panel__delete-text {
+    display: none;
+  }
+  .admin-panel__actions {
+    justify-content: center;
+  }
 }

@@ -11,6 +11,9 @@ interface Props {
 const defaultDashboardLinks: NavItem[] = [
   { href: "/", label: "home"},
   { href: '/dashboard/admin', label: 'admin' },
+  { href: '/dashboard/navigation', label: 'navigation' },
+  { href: '/dashboard/images', label: 'images' },
+  { href: '/dashboard/contacts', label: 'contacts' },
 ];
 
 const { title = 'Dashboard - Berry 26', links = defaultDashboardLinks } = Astro.props;
