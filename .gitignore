@@ -2,3 +2,4 @@
 /Backend/bin/*
 /.env
 /api/*
+/Backend/wwwroot
