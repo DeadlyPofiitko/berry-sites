@@ -13,10 +13,11 @@ public record GetComicsPages(
 
 public record CreatePageDto(
     PageType PageType,
+    List<SetPageContent> Contents,
     string Url
 );
 
-public record UpdatePageContent(
+public record SetPageContent(
     Language Language,
     string Title,
     string Subtitle
@@ -24,10 +25,10 @@ public record UpdatePageContent(
 
 public record UpdatePageDto(
     Guid Id,
-    List<UpdatePageContent> Contents,
+    List<SetPageContent> Contents,
     string Url
 );
 
-public record DeletePage(
+public record DeletePageDto(
     Guid Id
 );
