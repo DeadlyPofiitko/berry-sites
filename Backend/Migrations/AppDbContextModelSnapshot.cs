@@ -67,21 +67,24 @@ namespace backend.Migrations
 
             modelBuilder.Entity("Backend.Data.ImagePattern", b =>
                 {
-                    b.Property<Guid>("ImageId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("PatternId")
+                    b.Property<Guid>("ImageId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Order")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ImageId", "PatternId");
+                    b.Property<Guid>("PatternId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
 
                     b.HasIndex("PatternId");
-
-                    b.HasIndex("Order", "PatternId")
-                        .IsUnique();
 
                     b.ToTable("ImagePatterns");
                 });
@@ -137,7 +140,14 @@ namespace backend.Migrations
                     b.Property<int>("PageType")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Url")
+                        .IsUnique();
 
                     b.ToTable("Pages");
                 });
@@ -184,6 +194,9 @@ namespace backend.Migrations
 
                     b.Property<Guid>("PageId")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("PatternType")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
