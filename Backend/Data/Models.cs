@@ -26,17 +26,25 @@ public class Image
     public List<ImagePattern> ImagePatterns { get; set; } = [];
 }
 
+public enum PatternType
+{
+    ROW,
+    COLUMN
+}
+
 public class Pattern
 {
     public Guid Id { get; set; }
     public int Order { get; set; }
     public List<ImagePattern> ImagePatterns { get; set; } = [];
+    public PatternType PatternType { get; set; }
     public Guid PageId { get; set; }
     public Page Page { get; set; } = default!;
 }
 
 public class ImagePattern
 {
+    public Guid Id { get; set; }
     public Guid ImageId { get; set; }
     public Image Image { get; set; } = default!;
     public Guid PatternId { get; set; }

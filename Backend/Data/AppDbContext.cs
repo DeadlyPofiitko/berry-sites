@@ -35,10 +35,9 @@ public class AppDbContext : DbContext
             .HasIndex(x => new {x.Title, x.Language})
             .IsUnique();
         modelBuilder.Entity<ImagePattern>()
-            .HasIndex(x => new {x.Order, x.PatternId})
-            .IsUnique();
-        modelBuilder.Entity<ImagePattern>()
-            .HasKey(x => new { x.ImageId, x.PatternId });
+            .HasKey(x => x.Id);
+        // modelBuilder.Entity<ImagePattern>()
+        //     .HasKey(x => new { x.ImageId, x.PatternId, x.Order });
         modelBuilder.Entity<Page>()
             .HasIndex(x => x.Url)
             .IsUnique();
