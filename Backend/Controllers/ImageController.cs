@@ -87,17 +87,12 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
                 };
 
                 // Use the DB ID as the file name
-                var thumbFileName = $"{record.Id}_thumb.webp";
                 var fullFileName = $"{record.Id}_full.webp";
 
-                var thumbDiskPath = Path.Combine(thumbsDir, thumbFileName);
                 var fullDiskPath = Path.Combine(fullDir, fullFileName);
 
                 using var stream = file.OpenReadStream();
                 using var image = await SixLabors.ImageSharp.Image.LoadAsync(stream, ct);
-
-                record.Width = image.Width;
-                record.Height = image.Height;
 
                 // 2. Process and save full-screen version (cap max edge to 2560px)
                 using (var fullClone = image.Clone(ctx =>
@@ -112,24 +107,43 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
                     }
                 }))
                 {
+                    record.Width = image.Width;
+                    record.Height = image.Height;
+
                     await fullClone.SaveAsync(fullDiskPath, webpFullEncoder, ct);
                     savedFiles.Add(fullDiskPath);
                 }
 
-                // 3. Process and save grid thumbnail (max 500px)
-                using (var thumbClone = image.Clone(ctx =>
+                var previewSizes = new (string Suffix, int MaxDimension)[]
                 {
-                    ctx.Resize(new ResizeOptions
-                    {
-                        Size = new Size(500, 500),
-                        Mode = ResizeMode.Max
-                    });
-                }))
-                {
-                    await thumbClone.SaveAsync(thumbDiskPath, webpThumbEncoder, ct);
-                    savedFiles.Add(thumbDiskPath);
-                }
+                    ("sm", 500),
+                    ("md", 900),
+                    ("lg", 1400)
+                };
 
+                foreach (var (suffix, maxDim) in previewSizes)
+                {
+                    if (image.Width <= maxDim && image.Height <= maxDim && suffix != "sm")
+                    {
+                        continue;
+                    }
+
+                    string previewDiskPath = Path.Combine(thumbsDir, $"{record.Id}_{suffix}.webp");
+
+                    using (var thumbClone = image.Clone(ctx =>
+                    {
+                        ctx.Resize(new ResizeOptions
+                        {
+                            Size = new Size(maxDim, maxDim),
+                            Mode = ResizeMode.Max
+                        });
+                    }))
+                    {
+                        // Using lower quality/faster encoding for thumbs
+                        await thumbClone.SaveAsync(previewDiskPath, webpThumbEncoder, ct);
+                        savedFiles.Add(previewDiskPath);
+                    }
+                }
                 newRecords.Add(record);
             }
 
@@ -170,14 +184,17 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
             ?? throw new DomainException("Unknown image", 400);
 
         var webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        var thumbDiskPath = Path.Combine(webRoot, "uploads", "thumbs", $"{img.Id}_thumb.webp");
         var fullDiskPath = Path.Combine(webRoot, "uploads", "full", $"{img.Id}_full.webp");
 
         // 3. Remove DB record first
         appDbContext.Images.Remove(img);
         await appDbContext.SaveChangesAsync(ct);
 
-        DeleteFileIfExists(thumbDiskPath);
+        var suffixes = new[] { "sm", "md", "lg" };
+        foreach (var suffix in suffixes)
+        {
+            DeleteFileIfExists(Path.Combine(webRoot, "uploads", "thumbs", $"{img.Id}_{suffix}.webp"));
+        }
         DeleteFileIfExists(fullDiskPath);
         return Ok(new {success = true});
     }
