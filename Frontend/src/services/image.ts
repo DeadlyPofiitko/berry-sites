@@ -101,7 +101,7 @@ export async function getAllImages(): Promise<BackendImage[]> {
         height: img.height || img.Height || 0,
         width: img.width || img.Width || 0,
         fullUrl: `${baseUrl}/uploads/full/${img.id || img.Id}_full.webp`,
-        thumbnailUrl: `${baseUrl}/uploads/thumbs/${img.id || img.Id}_thumb.webp`,
+        thumbnailUrl: `${baseUrl}/uploads/thumbs/${img.id || img.Id}_sm.webp`,
       }));
     }
     return [];

@@ -4,3 +4,5 @@ export { Modal, type ModalProps, type ModalSize, type ModalRadius } from './Moda
 export { Avatar, type AvatarProps, type AvatarSize, type AvatarRadius } from './Avatar';
 export { Badge, type BadgeProps, type BadgeVariant, type BadgeColor, type BadgeSize } from './Badge';
 export { Card, type CardProps, type CardPadding } from './Card';
+export { Combobox, type ComboboxProps, type ComboboxItem } from './Combobox';
+

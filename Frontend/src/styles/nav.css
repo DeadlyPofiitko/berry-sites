@@ -8,8 +8,8 @@
 
 .box {
     background-color: var(--main-blue-color);
-    width: 20px;
-    height: 15px;
+    width: 30px;
+    height: 23px;
     transition: transform 0.2s ease;
 }
 

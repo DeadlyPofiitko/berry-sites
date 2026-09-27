@@ -1,8 +1,65 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Flex from "../components/Flex";
+import { getPublicPageContent } from "../services/pages";
+import PageGallery from "../components/PageGallery";
+
+const { locale = "en" } = Astro.locals;
+const pageContent = await getPublicPageContent("/illustration", locale);
+
+const title = pageContent?.title ?? "Illustration";
+const subtitle = pageContent?.subtitle ?? "";
+const patterns = pageContent?.patterns ?? [];
 ---
 
-<Layout>
-    <Flex align="center" justify="center" h="100vh">Illustration</Flex>
+<Layout title={`${title} - Berry 26`}>
+    <div class={`page-container ${patterns.length > 0 ? 'page-container--has-gallery' : ''}`}>
+        <div class="page-header">
+            <h1>{title}</h1>
+            {subtitle && <p>{subtitle}</p>}
+        </div>
+
+        {patterns.length > 0 && (
+            <div class="page-gallery-section">
+                <PageGallery patterns={patterns} client:load />
+            </div>
+        )}
+    </div>
 </Layout>
+
+<style>
+    .page-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .page-header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 6rem 1.5rem 2rem;
+    }
+
+    .page-container:not(.page-container--has-gallery) .page-header {
+        min-height: 80vh;
+    }
+
+    .page-header h1 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2.5rem;
+    }
+
+    .page-header p {
+        margin: 0;
+        opacity: 0.8;
+        font-size: 1.15rem;
+    }
+
+    .page-gallery-section {
+        width: 100%;
+        padding-bottom: 4rem;
+    }
+</style>

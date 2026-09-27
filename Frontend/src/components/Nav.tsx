@@ -190,7 +190,7 @@ export const Nav: React.FC<NavProps> = ({ currentPath, locale, isDomainScoped, l
           transition: 'transform 0.3s ease, padding 0.1s ease',
           display: 'flex',
           flexDirection: 'column',
-          padding: '4.5rem 1.5rem 1.5rem',
+          padding: '5.5rem 1.5rem 1.5rem',
           boxSizing: 'border-box',
           gap: '1rem',
         }}
