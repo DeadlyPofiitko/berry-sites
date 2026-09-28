@@ -588,14 +588,17 @@
   gap: 6px;
   width: 90px;
   height: 60px;
-  background: var(--mantine-dark-8, #141517);
+  background: var(--main-blue-color);
   padding: 6px;
   border-radius: 6px;
   flex-shrink: 0;
 }
 
 .page-gallery-admin__preview-box {
-  background: var(--main-blue-color);
+  /* background: var(--main-blue-color); */
+  background-color: var(--white-color);
+  border-radius: 3px;
+
 }
 
 .page-gallery-admin__choice-preview--row .page-gallery-admin__preview-box {
