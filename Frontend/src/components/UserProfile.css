@@ -4,10 +4,10 @@
   top: 0;
   right: 0;
   /* left: 0; */
-  width: fit-content;
+  width: 100vw;
   height: 4.25rem;
   padding: 0 1.5rem;
-  z-index: 1050;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -50,13 +50,20 @@
   align-items: center;
 }
 
+@media (max-width: 1200px) {
+  .user-profile-bar {
+    z-index: 1100;
+    width: fit-content;
+  }
+}
+
 @media (max-width: 768px) {
   .user-profile-bar__logout {
     display: none;
   }
 }
 
-@media (max-width: 375px) {
+@media (max-width: 475px) {
   .user-profile-bar__avatar {
     display: none;
   }
