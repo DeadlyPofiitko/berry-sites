@@ -11,7 +11,7 @@ interface Props {
 	navTop?: string;
 }
 
-const { title = 'Berry 26', showNav = true, navLinks: propNavLinks, navTop = '1.6rem' } = Astro.props;
+const { title = 'Berry26', showNav = true, navLinks: propNavLinks, navTop = '1.6rem' } = Astro.props;
 const currentPath = Astro.url.pathname;
 const { locale = 'en', isDomainScoped = false } = Astro.locals;
 
