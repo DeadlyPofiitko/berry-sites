@@ -61,6 +61,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthorization();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services.AddTransient<DataMigration>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=berry-sites.db"));
@@ -70,6 +71,31 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+}
+
+if (args.Length > 0 && args[0].StartsWith("--task:"))
+{
+    using var scope = app.Services.CreateScope();
+    var migrationService = scope.ServiceProvider.GetRequiredService<DataMigration>();
+
+    switch (args[0].ToLowerInvariant())
+    {
+        case "--task:export":
+            var exportFile = args.ElementAtOrDefault(1) ?? "data_export.json";
+            await migrationService.ExportAsync(exportFile);
+            return; // Terminate CLI immediately
+
+        case "--task:import":
+            var importFile = args.ElementAtOrDefault(1) ?? "data_export.json";
+            var shouldWipe = args.Contains("--wipe");
+            await migrationService.ImportAsync(importFile, wipeExisting: shouldWipe);
+            return; // Terminate CLI immediately
+
+        default:
+            Console.WriteLine($"Unknown task: {args[0]}");
+            Console.WriteLine("Available tasks: --task:export [path], --task:import [path] [--wipe]");
+            return;
+    }
 }
 
 app.UseExceptionHandler();
