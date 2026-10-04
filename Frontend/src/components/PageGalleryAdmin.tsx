@@ -15,6 +15,7 @@ import {
 } from '../services/pattern';
 import { getAllImages, type BackendImage } from '../services/image';
 import { PageGallery } from './PageGallery';
+import { UploadImage } from './UploadImage';
 import './PageGalleryAdmin.css';
 
 interface PageGalleryAdminProps {
@@ -28,6 +29,16 @@ function PlusIcon() {
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+function UploadIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
     </svg>
   );
 }
@@ -144,6 +155,7 @@ export const PageGalleryAdmin: React.FC<PageGalleryAdminProps> = ({ pageId, page
   } | null>(null);
   const [pickerSearch, setPickerSearch] = useState('');
   const [pickerFilter, setPickerFilter] = useState<'all' | 'landscape' | 'portrait'>('all');
+  const [pickerTab, setPickerTab] = useState<'library' | 'upload'>('library');
 
   // Load patterns & uploaded images
   const loadData = useCallback(async () => {
@@ -280,7 +292,27 @@ export const PageGalleryAdmin: React.FC<PageGalleryAdminProps> = ({ pageId, page
     setPickerTarget({ patternId, targetIndex, isReplace });
     setPickerSearch('');
     setPickerFilter('all');
+    setPickerTab('library');
     setShowPicker(true);
+  };
+
+  // Callback when upload completes from inside the Image Picker Modal
+  const handlePickerUploadSuccess = async () => {
+    try {
+      const prevIds = new Set(allImages.map((img) => img.id));
+      const freshImages = await getAllImages();
+      setAllImages(freshImages);
+
+      const newlyAdded = freshImages.filter((img) => !prevIds.has(img.id));
+      if (newlyAdded.length === 1 && pickerTarget) {
+        // Automatically assign single newly uploaded image to target slot
+        handleSelectImage(newlyAdded[0]);
+      } else {
+        setPickerTab('library');
+      }
+    } catch {
+      setPickerTab('library');
+    }
   };
 
   // Select image from picker
@@ -351,21 +383,28 @@ export const PageGalleryAdmin: React.FC<PageGalleryAdminProps> = ({ pageId, page
 
   // Filtered images for picker
   const filteredPickerImages = useMemo(() => {
-    return allImages.filter((img) => {
-      if (pickerSearch.trim()) {
-        const query = pickerSearch.toLowerCase();
-        if (!img.name.toLowerCase().includes(query)) {
-          return false;
+    return allImages
+      .filter((img) => {
+        if (pickerSearch.trim()) {
+          const query = pickerSearch.toLowerCase();
+          if (!img.name.toLowerCase().includes(query)) {
+            return false;
+          }
         }
-      }
-      if (pickerFilter === 'landscape') {
-        return img.width >= img.height;
-      }
-      if (pickerFilter === 'portrait') {
-        return img.height > img.width;
-      }
-      return true;
-    });
+        if (pickerFilter === 'landscape') {
+          return img.width >= img.height;
+        }
+        if (pickerFilter === 'portrait') {
+          return img.height > img.width;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.createdAt && b.createdAt) {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        }
+        return 0;
+      });
   }, [allImages, pickerSearch, pickerFilter]);
 
   // Render Slot Helper
@@ -795,98 +834,152 @@ export const PageGalleryAdmin: React.FC<PageGalleryAdminProps> = ({ pageId, page
          ======================================================== */}
       <Modal
         opened={showPicker}
-        onClose={() => setShowPicker(false)}
-        title="Select Image from Library"
+        onClose={() => {
+          setShowPicker(false);
+          setPickerTab('library');
+        }}
+        title={pickerTarget?.isReplace ? 'Replace Image' : 'Select Image for Pattern'}
         size="xl"
       >
         <div className="page-gallery-admin__picker">
-          {/* Picker Controls Bar */}
-          <div className="page-gallery-admin__picker-bar">
-            <Input
-              placeholder="Search uploaded images by name..."
-              value={pickerSearch}
-              onChange={(e) => setPickerSearch(e.target.value)}
-              className="page-gallery-admin__picker-search"
-            />
-
-            <div className="page-gallery-admin__picker-filters">
-              <button
-                type="button"
-                className={`page-gallery-admin__filter-btn ${pickerFilter === 'all' ? 'page-gallery-admin__filter-btn--active' : ''}`}
-                onClick={() => setPickerFilter('all')}
-              >
-                All ({allImages.length})
-              </button>
-              <button
-                type="button"
-                className={`page-gallery-admin__filter-btn ${pickerFilter === 'landscape' ? 'page-gallery-admin__filter-btn--active' : ''}`}
-                onClick={() => setPickerFilter('landscape')}
-              >
-                Landscape
-              </button>
-              <button
-                type="button"
-                className={`page-gallery-admin__filter-btn ${pickerFilter === 'portrait' ? 'page-gallery-admin__filter-btn--active' : ''}`}
-                onClick={() => setPickerFilter('portrait')}
-              >
-                Portrait
-              </button>
-            </div>
+          {/* Picker Tabs (Library vs Upload) */}
+          <div className="page-gallery-admin__picker-tabs">
+            <button
+              type="button"
+              className={`page-gallery-admin__tab ${pickerTab === 'library' ? 'page-gallery-admin__tab--active' : ''}`}
+              onClick={() => setPickerTab('library')}
+            >
+              Browse Library ({allImages.length})
+            </button>
+            <button
+              type="button"
+              className={`page-gallery-admin__tab ${pickerTab === 'upload' ? 'page-gallery-admin__tab--active' : ''}`}
+              onClick={() => setPickerTab('upload')}
+            >
+              <UploadIcon /> Upload New Images
+            </button>
           </div>
 
-          {/* Image Grid */}
-          <div className="page-gallery-admin__picker-grid">
-            {filteredPickerImages.length === 0 ? (
-              <div className="page-gallery-admin__picker-empty">
-                <p>No matching images found.</p>
-              </div>
-            ) : (
-              filteredPickerImages.map((img) => {
-                const isPortrait = img.height > img.width;
-                const qualities = getAvailableQualities(img.width, img.height);
-                const thumb = getThumbnailUrl(img.id, img.width, img.height, 'sm');
-
-                return (
-                  <div
-                    key={img.id}
-                    className="page-gallery-admin__picker-card"
-                    onClick={() => handleSelectImage(img)}
-                    title={`Click to select: ${img.name}`}
+          {pickerTab === 'library' ? (
+            <>
+              {/* Picker Controls Bar */}
+              <div className="page-gallery-admin__picker-bar">
+                <div className="page-gallery-admin__picker-search-row">
+                  <Input
+                    placeholder="Search uploaded images by name..."
+                    value={pickerSearch}
+                    onChange={(e) => setPickerSearch(e.target.value)}
+                    className="page-gallery-admin__picker-search"
+                  />
+                  <Button
+                    variant="light"
+                    color="blue"
+                    size="sm"
+                    leftSection={<UploadIcon />}
+                    onClick={() => setPickerTab('upload')}
                   >
-                    <div className="page-gallery-admin__picker-thumb-wrapper">
-                      <img
-                        src={thumb}
-                        alt={img.name}
-                        className="page-gallery-admin__picker-thumb"
-                        loading="lazy"
-                      />
-                      <span className="page-gallery-admin__picker-orient">
-                        {isPortrait ? 'Portrait' : 'Landscape'}
-                      </span>
-                    </div>
+                    Upload
+                  </Button>
+                </div>
 
-                    <div className="page-gallery-admin__picker-info">
-                      <span className="page-gallery-admin__picker-name" title={img.name}>
-                        {img.name}
-                      </span>
-                      <div className="page-gallery-admin__picker-meta">
-                        <span>
-                          {img.width} × {img.height}
-                        </span>
-                        <div className="page-gallery-admin__quality-badges">
-                          {qualities.map((q) => (
-                            <span key={q} className="page-gallery-admin__quality-badge">
-                              {q.toUpperCase()}
+                <div className="page-gallery-admin__picker-filters">
+                  <button
+                    type="button"
+                    className={`page-gallery-admin__filter-btn ${pickerFilter === 'all' ? 'page-gallery-admin__filter-btn--active' : ''}`}
+                    onClick={() => setPickerFilter('all')}
+                  >
+                    All ({allImages.length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`page-gallery-admin__filter-btn ${pickerFilter === 'landscape' ? 'page-gallery-admin__filter-btn--active' : ''}`}
+                    onClick={() => setPickerFilter('landscape')}
+                  >
+                    Landscape
+                  </button>
+                  <button
+                    type="button"
+                    className={`page-gallery-admin__filter-btn ${pickerFilter === 'portrait' ? 'page-gallery-admin__filter-btn--active' : ''}`}
+                    onClick={() => setPickerFilter('portrait')}
+                  >
+                    Portrait
+                  </button>
+                </div>
+              </div>
+
+              {/* Image Grid */}
+              <div className="page-gallery-admin__picker-grid">
+                {filteredPickerImages.length === 0 ? (
+                  <div className="page-gallery-admin__picker-empty">
+                    <p>No matching images found.</p>
+                    <Button
+                      variant="light"
+                      color="blue"
+                      size="xs"
+                      leftSection={<UploadIcon />}
+                      onClick={() => setPickerTab('upload')}
+                      style={{ marginTop: '10px' }}
+                    >
+                      Upload New Image
+                    </Button>
+                  </div>
+                ) : (
+                  filteredPickerImages.map((img) => {
+                    const isPortrait = img.height > img.width;
+                    const qualities = getAvailableQualities(img.width, img.height);
+                    const thumb = getThumbnailUrl(img.id, img.width, img.height, 'sm');
+
+                    return (
+                      <div
+                        key={img.id}
+                        className="page-gallery-admin__picker-card"
+                        onClick={() => handleSelectImage(img)}
+                        title={`Click to select: ${img.name}`}
+                      >
+                        <div className="page-gallery-admin__picker-thumb-wrapper">
+                          <img
+                            src={thumb}
+                            alt={img.name}
+                            className="page-gallery-admin__picker-thumb"
+                            loading="lazy"
+                          />
+                          <span className="page-gallery-admin__picker-orient">
+                            {isPortrait ? 'Portrait' : 'Landscape'}
+                          </span>
+                        </div>
+
+                        <div className="page-gallery-admin__picker-info">
+                          <span className="page-gallery-admin__picker-name" title={img.name}>
+                            {img.name}
+                          </span>
+                          <div className="page-gallery-admin__picker-meta">
+                            <span>
+                              {img.width} × {img.height}
                             </span>
-                          ))}
+                            <div className="page-gallery-admin__quality-badges">
+                              {qualities.map((q) => (
+                                <span key={q} className="page-gallery-admin__quality-badge">
+                                  {q.toUpperCase()}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="page-gallery-admin__picker-upload-container">
+              <UploadImage
+                embedded
+                onSuccess={handlePickerUploadSuccess}
+                onCancel={() => setPickerTab('library')}
+              />
+            </div>
+          )}
         </div>
       </Modal>
     </div>

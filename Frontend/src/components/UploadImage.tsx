@@ -12,6 +12,8 @@ export interface UploadImageProps {
   onClose?: () => void;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  embedded?: boolean;
+  onCancel?: () => void;
 }
 
 export interface BatchUploadItem {
@@ -72,6 +74,8 @@ export const UploadImage: React.FC<UploadImageProps> = ({
   onClose: controlledOnClose,
   onSuccess,
   trigger,
+  embedded = false,
+  onCancel,
 }) => {
   const [internalOpened, setInternalOpened] = useState(false);
   const isControlled = typeof controlledOpened === 'boolean';
@@ -99,6 +103,9 @@ export const UploadImage: React.FC<UploadImageProps> = ({
 
   const closeModal = () => {
     if (uploading) return;
+    if (onCancel) {
+      onCancel();
+    }
     if (isControlled) {
       controlledOnClose?.();
     } else {
@@ -261,31 +268,8 @@ export const UploadImage: React.FC<UploadImageProps> = ({
 
   const totalBytes = items.reduce((acc, item) => acc + item.file.size, 0);
 
-  return (
-    <>
-      {!isControlled && (
-        trigger ? (
-          <span onClick={() => setInternalOpened(true)}>{trigger}</span>
-        ) : (
-          <Button
-            variant="filled"
-            color="blue"
-            size="sm"
-            leftSection={<PlusIcon />}
-            onClick={() => setInternalOpened(true)}
-          >
-            Upload Images
-          </Button>
-        )
-      )}
-
-      <Modal
-        opened={isModalOpen}
-        onClose={closeModal}
-        title={items.length > 0 ? `Upload Images (${items.length})` : 'Upload Images'}
-        size="lg"
-      >
-        <form onSubmit={handleSubmit} className="upload-image-modal__content">
+  const formContent = (
+    <form onSubmit={handleSubmit} className={`upload-image-modal__content ${embedded ? 'upload-image-modal__content--embedded' : ''}`}>
           <input
             ref={fileInputRef}
             type="file"
@@ -477,6 +461,37 @@ export const UploadImage: React.FC<UploadImageProps> = ({
             </Button>
           </div>
         </form>
+  );
+
+  if (embedded) {
+    return formContent;
+  }
+
+  return (
+    <>
+      {!isControlled && (
+        trigger ? (
+          <span onClick={() => setInternalOpened(true)}>{trigger}</span>
+        ) : (
+          <Button
+            variant="filled"
+            color="blue"
+            size="sm"
+            leftSection={<PlusIcon />}
+            onClick={() => setInternalOpened(true)}
+          >
+            Upload Images
+          </Button>
+        )
+      )}
+
+      <Modal
+        opened={isModalOpen}
+        onClose={closeModal}
+        title={items.length > 0 ? `Upload Images (${items.length})` : 'Upload Images'}
+        size="lg"
+      >
+        {formContent}
       </Modal>
     </>
   );
