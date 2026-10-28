@@ -21,9 +21,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  // Strip the port to normalize host (e.g., "localhost:4321" -> "localhost")
-  const rawHost = context.request.headers.get('host') || context.url.host;
+  // Support X-Forwarded-Host if proxy modified Host header
+  const forwardedHost = context.request.headers.get('x-forwarded-host');
+  const rawHost = forwardedHost || context.request.headers.get('host') || context.url.host;
   const host = rawHost.split(':')[0].toLowerCase();
+
+  // Support direct X-Locale header passed by Nginx (e.g. proxy_set_header X-Locale cs;)
+  const headerLocale = context.request.headers.get('x-locale')?.toLowerCase();
 
   // 2. Resolve Domain: check mock param first (for dev convenience), then real host
   const mockDomain = searchParams.get('mock_domain');
@@ -36,7 +40,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const segments = pathname.split('/').filter(Boolean);
 
   // 3. Match strategy
-  if (DOMAIN_LOCALE_MAP[activeDomain]) {
+  if (headerLocale && SUPPORTED_LOCALES.includes(headerLocale)) {
+    locale = headerLocale;
+    isDomainScoped = true;
+  } else if (DOMAIN_LOCALE_MAP[activeDomain]) {
     locale = DOMAIN_LOCALE_MAP[activeDomain];
     isDomainScoped = true;
   } else if (segments.length > 0 && SUPPORTED_LOCALES.includes(segments[0])) {
