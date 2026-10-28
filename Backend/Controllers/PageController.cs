@@ -49,7 +49,7 @@ public class PageController(AppDbContext appDbContext) : ControllerBase
                                 {
                                     c.Title,
                                     c.Subtitle
-                                })
+                                }).First()
                             }).ToListAsync();
         return Ok(new { success = true, comicsPages = pages});
     }
