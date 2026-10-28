@@ -17,7 +17,7 @@ const lcpThumb = lcpImage ? getThumbnailUrl(lcpImage.imageId, lcpImage.width, lc
 const lcpSrcSet = lcpImage ? getImageSrcSet(lcpImage.imageId, lcpImage.width, lcpImage.height) : null;
 ---
 
-<Layout title={`${title} - Berry 26`}>
+<Layout title={title}>
     {lcpThumb && (
         <link
             slot="head"
