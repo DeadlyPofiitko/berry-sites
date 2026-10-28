@@ -1,0 +1,130 @@
+/* src/components/RichTextEditor.css */
+
+.rich-editor {
+  border: 1px solid var(--mantine-gray-3);
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rich-editor:focus-within {
+  border-color: var(--main-blue-color);
+  /* box-shadow: 0 0 0 3px rgba(45, 61, 204, 0.1); */
+}
+
+.rich-editor__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--mantine-gray-0);
+  border-bottom: 1px solid var(--mantine-gray-3);
+}
+
+.rich-editor__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 6px;
+  color: var(--black-color);
+  font-family: 'Ronzino-Bold', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.rich-editor__btn strong,
+.rich-editor__btn em,
+.rich-editor__btn u,
+.rich-editor__btn span {
+  font-family: 'Ronzino-Bold', sans-serif;
+}
+
+.rich-editor__btn:hover {
+  background: var(--mantine-gray-2);
+}
+
+.rich-editor__btn--active {
+  background: var(--mantine-primary-1);
+  color: var(--main-blue-color);
+  border-color: var(--mantine-primary-3);
+}
+
+.rich-editor__divider {
+  width: 1px;
+  height: 20px;
+  background: var(--mantine-gray-3);
+  margin: 0 4px;
+}
+
+.rich-editor__content {
+  padding: 14px 16px;
+  min-height: 180px;
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: 'Ronzino-Medium', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--black-color);
+}
+
+.rich-editor__content .ProseMirror {
+  outline: none;
+  min-height: 150px;
+}
+
+.rich-editor__content .ProseMirror p {
+  margin: 0 0 0.85rem 0;
+  font-size: 1.05rem;
+  color: var(--black-color);
+}
+
+.rich-editor__content .ProseMirror p:last-child {
+  margin-bottom: 0;
+}
+
+.rich-editor__content .ProseMirror a {
+  color: var(--main-blue-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.rich-editor__content .ProseMirror h3 {
+  font-family: 'ClashDisplay-Bold', sans-serif;
+  font-size: 1.4rem;
+  margin: 1.1rem 0 0.5rem 0;
+  color: var(--main-blue-color);
+}
+
+.rich-editor__content .ProseMirror h4 {
+  font-family: 'ClashDisplay-Bold', sans-serif;
+  font-size: 1.2rem;
+  margin: 0.9rem 0 0.4rem 0;
+  color: var(--black-color);
+}
+
+.rich-editor__content .ProseMirror ul,
+.rich-editor__content .ProseMirror ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0 0.85rem 0;
+}
+
+.rich-editor__content .ProseMirror u {
+  text-decoration: underline;
+}
+
+.rich-editor__content .ProseMirror em {
+  font-style: italic;
+}
+
+.rich-editor__content .ProseMirror strong {
+  font-weight: 700;
+}

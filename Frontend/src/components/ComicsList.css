@@ -1,0 +1,167 @@
+/* src/components/ComicsList.css */
+
+.comics-list-container {
+  /* width: 100%; */
+  /* max-width: 900px; */
+  margin-left: clamp(2px, 5vw, 3rem);
+  margin-top: clamp(2px, 5vw, 5rem);
+  /* padding: 0 1.5rem 4rem 1.5rem; */
+  padding-right: clamp(1.5rem, 4vw, 4rem);
+}
+
+/* Search bar styling */
+.comics-search-wrapper {
+  position: relative;
+  /* margin-bottom: .5rem; */
+  width: 100px;
+}
+
+.comics-search-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 290px;
+  background: rgba(255, 255, 255, 0.85);
+  /* border: 2px solid var(--secondary-blue-color); */
+  border: 2px solid transparent;
+  border-radius: 0px;
+  padding: 0.2rem 0.5rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); */
+}
+
+.comics-search-input-box:focus-within {
+  border: 2px solid var(--main-blue-color);
+  background: #ffffff;
+}
+
+.comics-search-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--main-blue-color);
+  margin-right: 0.85rem;
+  opacity: 0.75;
+}
+
+.comics-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--main-blue-color);
+  font-family: 'Ronzino-Bold';
+  font-size: clamp(1.5rem, 8vw, 2rem);
+  max-width: 250px;
+}
+
+
+.comics-search-input::placeholder {
+  color: var(--main-blue-color);
+  font-family: 'Ronzino-Bold';
+  font-size: clamp(1.5rem, 8vw, 2rem);
+}
+
+.comics-search-input-box:focus-within .comics-search-input::placeholder {
+    color: transparent;
+}
+
+.comics-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(45, 45, 35, 0.08);
+  border-radius: 50%;
+  color: var(--black-color);
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+  transition: all 0.15s ease;
+  font-size: 10px;
+}
+
+.comics-search-clear:hover {
+  background: rgba(45, 61, 204, 0.15);
+  color: var(--main-blue-color);
+}
+
+.comics-search-count {
+  font-family: 'Ronzino-Medium', system-ui, sans-serif;
+  font-size: 0.9rem;
+  color: rgba(45, 45, 35, 0.55);
+  margin-top: 0.6rem;
+  margin-left: 0.5rem;
+}
+
+/* Comics List Links */
+.comics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.comics-list__item-link {
+  display: block;
+  padding: 0.8rem 0.5rem;
+  text-decoration: none;
+  font-family: 'Ronzino-Bold';
+  font-size: clamp(2.5rem, 8vw, 5.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  word-break: break-word;
+  transition: color 0.2s ease;
+  color: var(--main-blue-color);
+}
+
+/* On hover change color to more white */
+.comics-list__item-link:hover {
+  color: var(--secondary-blue-color);
+}
+
+/* Empty State */
+.comics-list-empty {
+  /* background: rgba(45, 61, 204, 0.03); */
+  border-radius: 16px;
+  /* border: 1px dashed rgba(45, 61, 204, 0.2); */
+  margin-top: 1rem;
+  margin-left: 0.5rem
+}
+
+.comics-list-empty p {
+  font-family: 'Ronzino-Medium', system-ui, sans-serif;
+  font-size: 1.25rem;
+  color: rgba(45, 45, 35, 0.7);
+  margin: 0 0 1.25rem 0;
+}
+
+.comics-list-reset-btn {
+  background: var(--main-blue-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.4rem;
+  font-family: 'Ronzino-Medium', system-ui, sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.comics-list-reset-btn:hover {
+  background: var(--secondary-blue-color);
+  /* transform: translateY(-1px); */
+}
+
+
+@media (max-width: 480px) {
+  .comics-search-input-box {
+    width: 200px;
+  }
+  .comics-search-input {
+    width: 160px;
+  }
+}

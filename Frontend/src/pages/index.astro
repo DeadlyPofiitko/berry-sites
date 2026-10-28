@@ -2,18 +2,91 @@
 import Layout from '../layouts/Layout.astro';
 import Flex from '../components/Flex';
 import Stack from '../components/Stack';
+import { getSectionContent, getAboutContent, resolveAboutImage } from '../services/content';
+
+const { locale = "en" } = Astro.locals;
+const contactsData = await getSectionContent('contacts', locale);
+const contactItems = contactsData?.items ?? [];
+
+const aboutData = await getAboutContent(locale);
+const aboutTitle = aboutData?.title ?? '';
+const aboutBlocks = aboutData?.blocks ?? [];
+
+function cleanSvg(rawSvg?: string | null): string {
+	if (!rawSvg) return '';
+	return rawSvg
+		.replace(/<\?xml[\s\S]*?\?>/gi, '')
+		.replace(/<!DOCTYPE[\s\S]*?>/gi, '')
+		.trim();
+}
 ---
 
 <Layout>
 	<div id="home"></div>
 	<Flex align="end" justify="start" h="100vh">
-		<h1>Berry26</h1>
+		<h1>Berry 26</h1>
 	</Flex>
 	<Stack className="about-container">
 		<div id="about"></div>
-		<h2>Karolína Stella Zímová<br>aka<br>Berry26</h2>
-		<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto, aperiam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ducimus blanditiis officiis voluptas maiores debitis illum veniam ipsam beatae ullam facere. Nulla dicta facere ea pariatur exercitationem eaque non amet nisi.</p>
+		{aboutTitle ? (
+			<h2 set:html={aboutTitle} />
+		) : (
+			aboutBlocks.length === 0 && (
+				<h2>Karolína Stella Zímová<br>aka<br>Berry26</h2>
+			)
+		)}
+
+		{aboutBlocks.length > 0 ? (
+			aboutBlocks.map((block) => {
+				if (block.type === 'content' && block.content) {
+					return (
+						<div class="about-block about-content" set:html={block.content} />
+					);
+				}
+				if (block.type === 'image' && block.image) {
+					const img = resolveAboutImage(block.image);
+					if (!img) return null;
+					return (
+						<div class="about-block about-image-wrapper">
+							<img
+								src={img.src}
+								srcset={img.srcSet || undefined}
+								sizes={img.sizes || undefined}
+								alt="About"
+								loading="lazy"
+								decoding="async"
+								class="about-image"
+							/>
+						</div>
+					);
+				}
+				return null;
+			})
+		) : (
+			!aboutTitle && (
+				<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto, aperiam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ducimus blanditiis officiis voluptas maiores debitis illum veniam ipsam beatae ullam facere. Nulla dicta facere ea pariatur exercitationem eaque non amet nisi.</p>
+			)
+		)}
 	</Stack>
+
+	<section class="contacts-container">
+		<div id="contact"></div>
+		<div class="contacts-list">
+			{contactItems.map((item) => (
+				<a
+					href={item.url || '#'}
+					target={item.url?.startsWith('http') ? '_blank' : undefined}
+					rel={item.url?.startsWith('http') ? 'noopener noreferrer' : undefined}
+					class="contact-link"
+				>
+					{item.svg && (
+						<span class="contact-icon" set:html={cleanSvg(item.svg)} />
+					)}
+					<span class="contact-text">{item.text}</span>
+				</a>
+			))}
+		</div>
+	</section>
 </Layout>
 
 <style>
@@ -22,39 +95,205 @@ import Stack from '../components/Stack';
 		color: var(--main-blue-color);
 		font-family: "ClashDisplay-Bold";
 		text-transform: uppercase;
-		word-break: break-all;
+		/* word-break: break-all; */
 		margin-left: clamp(1rem, 5vw, 2.5rem);
 		margin-bottom: clamp(1.5rem, 3.5vw, 3rem);
 		font-size: clamp(5.5rem, 18vw, 15.5rem);
-		line-height: clamp(5.5rem, 18vw, 15.5rem);
+		line-height: clamp(3rem, 18vw, 15.5rem);
+		word-spacing: calc(10px - clamp(20px, 4vw, 50px));
 	}
-	#about {
-		margin-top: 2rem;
+	#about,
+	#contacs,
+	#contacts,
+	#contact {
+		margin-top: 5rem;
+		scroll-margin-top: 5rem;
 	}
 	.about-container {
 		margin-left: clamp(1rem, 30vh, 20rem);
-		max-width: 55rem;
-		padding-right: 1rem;
-	}
-	h2 {
-		font-size: clamp(3rem, 6.5vw, 5rem);
-		margin-bottom: 0;
-		margin-top: 5rem;
-	}
-	p {
-		font-size: 2.5rem;
+		/* max-width: 60rem; */
+		margin-right: 3rem;
 		margin-bottom: 10rem;
+		color: var(--main-blue-color);
 	}
+
+	.about-container :global(*) {
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(h2),
+	h2 {
+		font-family: 'Ronzino-Bold', 'Ronzino-Medium', sans-serif;
+		font-size: clamp(3rem, 7vw, 6rem);
+		margin-bottom: 2rem;
+		margin-top: 5rem;
+		line-height: 1.15;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(h3) {
+		font-family: 'Ronzino-Bold', 'Ronzino-Medium', sans-serif;
+		font-size: clamp(2rem, 4.5vw, 3.2rem);
+		margin: 2rem 0 1rem 0;
+		line-height: 1.2;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(h4) {
+		font-family: 'Ronzino-Bold', 'Ronzino-Medium', sans-serif;
+		font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+		margin: 1.5rem 0 0.8rem 0;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(p),
+	p {
+		font-family: 'Ronzino-Bold', 'Ronzino-Medium', sans-serif;
+		font-size: clamp(1.5rem, 3.2vw, 2rem);
+		line-height: 1.4;
+		margin-bottom: 1.8rem;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(p:last-child) {
+		margin-bottom: 0;
+	}
+
+	.about-container :global(a) {
+		color: var(--main-blue-color);
+		text-decoration: underline;
+		transition: opacity 0.2s ease;
+	}
+
+	.about-container :global(a:hover) {
+		color: var(--secondary-blue-color);
+	}
+
+	.about-container :global(ul),
+	.about-container :global(ol) {
+		font-family: 'Ronzino-Bold', 'Ronzino-Medium', sans-serif;
+		font-size: clamp(1.4rem, 3vw, 2.2rem);
+		line-height: 1.4;
+		padding-left: 2.2rem;
+		margin-bottom: 1.8rem;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(li) {
+		margin-bottom: 0.5rem;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(strong) {
+		font-family: 'Ronzino-Bold', sans-serif;
+		font-weight: 700;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(em) {
+		font-style: italic;
+		color: var(--main-blue-color);
+	}
+
+	.about-container :global(u) {
+		text-decoration: underline;
+		color: var(--main-blue-color);
+	}
+
+	.about-block {
+		margin-bottom: 1rem;
+	}
+
+	.about-block:last-child {
+		margin-bottom: 0;
+	}
+
+	.about-image-wrapper {
+		margin: 1rem 0;
+		width: 100%;
+	}
+
+	.about-image {
+		width: 80%;
+		height: auto;
+		display: block;
+		/* border-radius: var(--mantine-radius-md, 8px); */
+	}
+
+	/* Contacts section */
+	.contacts-container {
+		margin-left: clamp(1rem, 30vh, 20rem);
+		max-width: 65rem;
+		padding-right: 1rem;
+		margin-bottom: 10rem;
+		margin-top: 2rem;
+	}
+
+	.contacts-list {
+		display: flex;
+		flex-direction: column;
+		gap: clamp(1rem, 2.5vw, 2.2rem);
+		margin-block: 5rem clamp(26rem, 50vw, 35rem);
+
+	}
+
+	.contact-link {
+		display: inline-flex;
+		align-items: center;
+		gap: clamp(0.8rem, 2vw, 1.8rem);
+		text-decoration: none;
+		color: var(--main-blue-color);
+		font-family: 'Ronzino-Bold', sans-serif;
+		font-size: clamp(1.2rem, 4vw, 4rem);
+		line-height: 1.2;
+		width: fit-content;
+		transition: color 0.2s ease;
+	}
+
+	.contact-link:hover {
+		color: var(--secondary-blue-color);
+	}
+
+	.contact-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: clamp(2rem, 4.5vw, 3.2rem);
+		height: clamp(2rem, 4.5vw, 3.2rem);
+		flex-shrink: 0;
+	}
+
+	.contact-icon :global(svg) {
+		width: 100%;
+		height: 100%;
+		max-width: 100%;
+		max-height: 100%;
+		display: block;
+	}
+
+	.contact-icon :global(svg),
+	.contact-icon :global(svg *) {
+		fill: currentColor !important;
+		transition: fill 0.2s ease;
+	}
+
+	.contact-text {
+		word-break: break-word;
+	}
+
 	@media (max-width: 1000px) {
 		h1 {
 			margin-left: 1rem;
 		}
-		.about-container {
+		.about-container,
+		.contacts-container {
 			margin-left: 1rem;
+			margin-right: 1.5rem;
 		}
 	}
 	@media (min-width: 1200px) {
-		.about-container {
+		.about-container,
+		.contacts-container {
 			margin-left: clamp(1rem, 5vw, 2.5rem);	
 		}	
 	}
@@ -62,16 +301,16 @@ import Stack from '../components/Stack';
 	@media (max-width: 450px) {
 		h1 {
 			font-size: clamp(4.5rem, 25vw, 12.5rem);
+			line-height: clamp(3rem, 20vw, 12.5rem);
+		}
+		.about-image {
+			width: 100%;
 		}
 	}
-
-
 
 	@media (max-width: 280px) {
 		h1 {
 			font-size: 4rem;
-			
 		}
 	}
-
 </style>

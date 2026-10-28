@@ -100,9 +100,9 @@ function GlobeIcon() {
 }
 
 // Safely render SVG string in a div
-function SvgRenderer({ svgString, className = '' }: { svgString: string; className?: string }) {
+function SvgRenderer({ svgString, className = '' }: { svgString?: string | null; className?: string }) {
   if (!svgString || !svgString.trim()) {
-    return <GlobeIcon />;
+    return <span className="contacts-admin__no-icon-tag" title="No SVG icon">—</span>;
   }
 
   return (
@@ -265,7 +265,7 @@ export const ContactsAdmin: React.FC = () => {
         });
       }
 
-      const success = await updateSectionContent(payloads);
+      const success = await updateSectionContent(payloads, 'Contacts saved successfully');
       if (success) {
         setInitialSnapshot(currentSnapshot);
       }
@@ -309,10 +309,17 @@ export const ContactsAdmin: React.FC = () => {
     setEditingItem(item);
     setItemLabel(item.text);
     setItemUrl(item.url);
-    setItemSvg(item.svg);
+    setItemSvg(item.svg || '');
     setItemError(null);
     setIsSvgDragOver(false);
     setModalOpen(true);
+  };
+
+  // Remove SVG icon directly from a contact
+  const removeSvgFromItem = (id: string) => {
+    setItems((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, svg: null } : it))
+    );
   };
 
   // Handle uploaded SVG file
@@ -366,17 +373,14 @@ export const ContactsAdmin: React.FC = () => {
       return;
     }
 
-    if (!itemSvg.trim()) {
-      setItemError('Please upload an SVG icon for this contact.');
-      return;
-    }
+    const svgValue = itemSvg.trim() || null;
 
     if (editingItem) {
       // Update existing item
       setItems((prev) =>
         prev.map((it) =>
           it.id === editingItem.id
-            ? { ...it, text: itemLabel.trim(), url: itemUrl.trim(), svg: itemSvg.trim() }
+            ? { ...it, text: itemLabel.trim(), url: itemUrl.trim(), svg: svgValue }
             : it
         )
       );
@@ -386,7 +390,7 @@ export const ContactsAdmin: React.FC = () => {
         id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
         text: itemLabel.trim(),
         url: itemUrl.trim(),
-        svg: itemSvg.trim(),
+        svg: svgValue,
       };
       setItems((prev) => [...prev, newItem]);
     }
@@ -569,7 +573,7 @@ export const ContactsAdmin: React.FC = () => {
                     </div>
 
                     {/* SVG Icon Badge */}
-                    <div className="contacts-admin__item-icon-box">
+                    <div className={`contacts-admin__item-icon-box ${!item.svg ? 'contacts-admin__item-icon-box--empty' : ''}`}>
                       <SvgRenderer svgString={item.svg} />
                     </div>
 
@@ -590,6 +594,17 @@ export const ContactsAdmin: React.FC = () => {
 
                     {/* Row Actions */}
                     <div className="contacts-admin__item-actions">
+                      {item.svg && (
+                        <Button
+                          variant="subtle"
+                          color="red"
+                          size="xs"
+                          onClick={() => removeSvgFromItem(item.id)}
+                          title="Delete SVG from this contact"
+                        >
+                          Delete SVG
+                        </Button>
+                      )}
                       <button
                         type="button"
                         className="contacts-admin__row-btn"
@@ -647,7 +662,7 @@ export const ContactsAdmin: React.FC = () => {
           <div className="contacts-admin__svg-upload-section">
             <div className="contacts-admin__svg-header">
               <label className="contacts-admin__input-label">
-                Icon (SVG) <span className="contacts-admin__required">*</span>
+                Icon (SVG) <span style={{ color: 'var(--mantine-gray-6)', fontWeight: 'normal', fontSize: '0.8rem' }}>(optional)</span>
               </label>
               <span className="contacts-admin__input-hint">Upload any .svg vector file</span>
             </div>
@@ -692,7 +707,7 @@ export const ContactsAdmin: React.FC = () => {
                   Click or drag & drop .svg file here
                 </div>
                 <p className="contacts-admin__svg-dropzone-sub">
-                  Only vector SVG files are supported
+                  Only vector SVG files are supported (optional)
                 </p>
               </div>
             ) : (
@@ -702,15 +717,27 @@ export const ContactsAdmin: React.FC = () => {
                 </div>
                 <div className="contacts-admin__svg-preview-meta">
                   <span className="contacts-admin__svg-status">SVG Icon Loaded</span>
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="xs"
-                    leftSection={<UploadIcon />}
-                    onClick={() => svgFileInputRef.current?.click()}
-                  >
-                    Upload Different SVG
-                  </Button>
+                  <div className="contacts-admin__svg-actions">
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="xs"
+                      leftSection={<UploadIcon />}
+                      onClick={() => svgFileInputRef.current?.click()}
+                    >
+                      Upload Different SVG
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="light"
+                      color="red"
+                      size="xs"
+                      leftSection={<TrashIcon />}
+                      onClick={() => setItemSvg('')}
+                    >
+                      Delete SVG
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}

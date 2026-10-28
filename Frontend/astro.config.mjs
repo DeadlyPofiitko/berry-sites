@@ -12,5 +12,8 @@ export default defineConfig({
     integrations: [react()],
     vite: {
         envDir: '..',
+        optimizeDeps: {
+            include: ['photoswipe', 'photoswipe/lightbox'],
+        },
     },
 });

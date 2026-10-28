@@ -1,0 +1,57 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getPublicPageContent } from "../../services/pages";
+import PageGallery, { getLcpImage } from "../../components/PageGallery";
+import { getThumbnailUrl, getImageSrcSet } from "../../services/pattern";
+import "../../styles/page-style.css";
+
+const { locale = "en" } = Astro.locals;
+const { slug } = Astro.params;
+
+if (!slug) {
+    return Astro.redirect('/comics');
+}
+
+// In the backend, URL might be stored as "/comics-1", "comics-1", or "/comics/comics-1"
+let pageContent = await getPublicPageContent(`/${slug}`, locale);
+if (!pageContent) {
+    pageContent = await getPublicPageContent(slug, locale);
+}
+if (!pageContent) {
+    pageContent = await getPublicPageContent(`/comics/${slug}`, locale);
+}
+
+const title = pageContent?.title || slug;
+const subtitle = pageContent?.subtitle ?? "";
+const patterns = pageContent?.patterns ?? [];
+
+const lcpImage = getLcpImage(patterns);
+const lcpThumb = lcpImage ? getThumbnailUrl(lcpImage.imageId, lcpImage.width, lcpImage.height, 'md') : null;
+const lcpSrcSet = lcpImage ? getImageSrcSet(lcpImage.imageId, lcpImage.width, lcpImage.height) : null;
+---
+
+<Layout title={title}>
+    {lcpThumb && (
+        <link
+            slot="head"
+            rel="preload"
+            as="image"
+            href={lcpThumb}
+            imagesrcset={lcpSrcSet || undefined}
+            imagesizes="(max-width: 768px) 100vw, 50vw"
+            fetchpriority="high"
+        />
+    )}
+    <div class="page-container">
+        <div class="page-header">
+            <h1>{title}</h1>
+            {subtitle && <p>{subtitle}</p>}
+        </div>
+
+        {patterns.length > 0 && (
+            <div class="page-gallery-section">
+                <PageGallery patterns={patterns} client:load />
+            </div>
+        )}
+    </div>
+</Layout>

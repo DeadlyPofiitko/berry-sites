@@ -253,6 +253,17 @@
   flex-shrink: 0;
 }
 
+.contacts-admin__item-icon-box--empty {
+  background-color: var(--mantine-gray-1, #f1f3f5);
+  color: var(--mantine-gray-5, #adb5bd);
+}
+
+.contacts-admin__no-icon-tag {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--mantine-gray-5, #adb5bd);
+}
+
 .contacts-admin__svg-container {
   display: flex;
   align-items: center;
@@ -450,6 +461,13 @@
   flex-direction: column;
   gap: 0.35rem;
   align-items: flex-start;
+}
+
+.contacts-admin__svg-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .contacts-admin__svg-status {

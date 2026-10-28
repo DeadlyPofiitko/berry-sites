@@ -1,6 +1,7 @@
 // src/components/ImagesGallery.tsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
+import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
 import { Button, Modal, Badge } from './ui';
 import { getAllImages, deleteImage as deleteImageService, type BackendImage } from '../services/image';
@@ -100,7 +101,7 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
     const lightbox = new PhotoSwipeLightbox({
       gallery: `#${galleryContainerId}`,
       children: 'a.images-gallery__card-link',
-      pswpModule: () => import('photoswipe'),
+      pswpModule: PhotoSwipe,
       showHideAnimationType: 'zoom',
     });
 

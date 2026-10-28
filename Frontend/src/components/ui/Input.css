@@ -45,7 +45,6 @@
 
 .mantine-input__field {
   width: 100%;
-  font-family: inherit;
   box-sizing: border-box;
   background-color: #ffffff;
   color: var(--mantine-gray-9, #212529);
@@ -56,6 +55,7 @@
   outline: none;
   -webkit-appearance: none;
   appearance: none;
+  font-family: 'Ronzino-Regular';
 }
 
 .mantine-input__field::placeholder {

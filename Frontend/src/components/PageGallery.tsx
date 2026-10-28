@@ -1,6 +1,7 @@
 // src/components/PageGallery.tsx
 import React, { useEffect, useRef, useId, useMemo } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
+import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
 import {
   PatternType,
@@ -111,7 +112,7 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
     const lightbox = new PhotoSwipeLightbox({
       gallery: `#${galleryId}`,
       children: 'a.page-gallery__item-link',
-      pswpModule: () => import('photoswipe'),
+      pswpModule: PhotoSwipe,
       showHideAnimationType: 'zoom',
     });
 

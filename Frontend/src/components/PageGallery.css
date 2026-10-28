@@ -151,3 +151,11 @@
     max-width: 100% !important;
   }
 }
+
+/* =========================================
+   PHOTOSWIPE OVERRIDES
+   ========================================= */
+.pswp__counter {
+  font-family: 'Ronzino-Bold', sans-serif;
+}
+

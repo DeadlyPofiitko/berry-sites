@@ -6,7 +6,7 @@ const DEFAULT_LOCALE = 'en';
 const DOMAIN_LOCALE_MAP: Record<string, string> = {
   'berry26.com': 'en',
   'berry26.cz': 'cs',
-  'localhost': 'cs'
+  'localhost': 'en'
 };
 
 export const onRequest = defineMiddleware(async (context, next) => {

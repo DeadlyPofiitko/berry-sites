@@ -63,6 +63,11 @@
   outline: none;
 }
 
+/* PhotoSwipe Overrides */
+.pswp__counter {
+  font-family: 'Ronzino-Bold', sans-serif;
+}
+
 /* Thumbnail wrapper with checkerboard pattern for transparent PNGs */
 .images-gallery__thumb-wrapper {
   width: 100%;

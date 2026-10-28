@@ -36,6 +36,10 @@
   background-color: var(--mantine-gray-1, #f1f3f5);
   color: var(--mantine-gray-7, #495057);
 }
+.mantine-badge--variant-light.mantine-badge--color-orange {
+  background-color: var(--mantine-orange-0, #fff4e6);
+  color: var(--mantine-orange-8, #e8590c);
+}
 
 /* Variants: Filled */
 .mantine-badge--variant-filled.mantine-badge--color-blue {
@@ -54,6 +58,10 @@
   background-color: var(--mantine-gray-7, #495057);
   color: #ffffff;
 }
+.mantine-badge--variant-filled.mantine-badge--color-orange {
+  background-color: var(--mantine-orange-6, #fd7e14);
+  color: #ffffff;
+}
 
 /* Variants: Outline */
 .mantine-badge--variant-outline.mantine-badge--color-blue {
@@ -64,5 +72,10 @@
 .mantine-badge--variant-outline.mantine-badge--color-gray {
   border: 1px solid var(--mantine-gray-4, #ced4da);
   color: var(--mantine-gray-7, #495057);
+  background: transparent;
+}
+.mantine-badge--variant-outline.mantine-badge--color-orange {
+  border: 1px solid var(--mantine-orange-6, #fd7e14);
+  color: var(--mantine-orange-7, #f76707);
   background: transparent;
 }

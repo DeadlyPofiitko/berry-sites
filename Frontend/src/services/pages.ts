@@ -347,3 +347,39 @@ export async function getPublicPageContent(
   return null;
 }
 
+export interface ComicsPageItem {
+  url: string;
+  content: {
+    title: string;
+    subtitle: string;
+  };
+}
+
+/** GET /page/comics?language=... - retrieve all comics pages */
+export async function getComicsPages(locale: string = 'en'): Promise<ComicsPageItem[]> {
+  try {
+    const baseUrl = getApiBaseUrl();
+    const langParam = locale.toUpperCase() === 'CS' ? '1' : '0';
+    const endpoint = `${baseUrl}/page/comics?language=${langParam}`;
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+    const res = await fetch(endpoint, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return [];
+    const data = await res.json();
+    if (data?.success && Array.isArray(data?.comicsPages)) {
+      return data.comicsPages;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+

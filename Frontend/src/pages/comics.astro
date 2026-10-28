@@ -1,8 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Flex from "../components/Flex";
+import { getComicsPages } from "../services/pages";
+import ComicsList from "../components/ComicsList";
+import "../styles/page-style.css";
+
+const { locale = "en", isDomainScoped = false } = Astro.locals;
+const comics = await getComicsPages(locale);
+
 ---
 
-<Layout>
-    <Flex align="center" justify="center" h="100vh">Comics</Flex>
+<Layout title="Comics">
+    <div class="page-container">
+        <ComicsList comics={comics} locale={locale} isDomainScoped={isDomainScoped} client:load />
+    </div>
 </Layout>
