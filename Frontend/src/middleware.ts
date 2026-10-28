@@ -4,8 +4,8 @@ const SUPPORTED_LOCALES = ['en', 'cs'];
 const DEFAULT_LOCALE = 'en';
 
 const DOMAIN_LOCALE_MAP: Record<string, string> = {
-  'berry.com': 'en',
-  'berry.cz': 'cs',
+  'berry26.com': 'en',
+  'berry26.cz': 'cs',
   'localhost': 'cs'
 };
 
