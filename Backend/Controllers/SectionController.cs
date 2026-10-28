@@ -9,14 +9,14 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ContentController(AppDbContext appDbContext) : ControllerBase
+public class SectionController(AppDbContext appDbContext) : ControllerBase
 {
     [HttpGet("content")]
     public async Task<IActionResult> GetContentOfSection([FromQuery] GetContentDto dto)
     {
         var content = await appDbContext.SectionContents.AsNoTracking()
                                 .Where(x => x.Language == dto.Language && x.Section.Name == dto.Name)
-                                .Select(x => x.Json).FirstAsync();
+                                .Select(x => x.Json).FirstOrDefaultAsync() ?? throw new DomainException("Unkown section", 404);
         return Ok(new { content });
     }
 
