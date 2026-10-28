@@ -1,5 +1,5 @@
 // src/components/PageGallery.tsx
-import React, { useEffect, useRef, useId } from 'react';
+import React, { useEffect, useRef, useId, useMemo } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 import {
@@ -15,12 +15,95 @@ import './PageGallery.css';
 export interface PageGalleryProps {
   patterns: PatternDto[];
   className?: string;
+  priorityCount?: number;
 }
 
-export const PageGallery: React.FC<PageGalleryProps> = ({ patterns, className = '' }) => {
+// Normalize pattern to standard format
+export const normalizePattern = (p: PatternDto): PatternDto => {
+  const rawType = p.patternType ?? (p as any).PatternType;
+  let patternType: PatternType = PatternType.ROW;
+  if (rawType === PatternType.COLUMN || rawType === 1 || rawType === 'COLUMN' || rawType === 'Column') {
+    patternType = PatternType.COLUMN;
+  }
+
+  const rawImages = p.images || (p as any).Images || [];
+  const images: PatternImageDto[] = rawImages
+    .map((img: any) => ({
+      order: img.order ?? img.Order ?? 0,
+      imageId: img.imageId || img.ImageId,
+      width: img.width ?? img.Width ?? 1200,
+      height: img.height ?? img.Height ?? 800,
+    }))
+    .sort((a: any, b: any) => a.order - b.order);
+
+  return {
+    id: p.id || (p as any).Id || String(Math.random()),
+    order: p.order ?? (p as any).Order ?? 0,
+    patternType,
+    images,
+  };
+};
+
+/**
+ * Returns all gallery images in visual display order.
+ */
+export function getGalleryImageOrder(patterns: PatternDto[]): PatternImageDto[] {
+  if (!patterns || patterns.length === 0) return [];
+  const result: PatternImageDto[] = [];
+  for (const p of patterns) {
+    const norm = normalizePattern(p);
+    const images = norm.images;
+    if (images.length === 0) continue;
+
+    const isCol = norm.patternType === PatternType.COLUMN;
+    if (isCol && images.length >= 3) {
+      let portraitIdx = 0;
+      let minRatio = Infinity;
+      images.forEach((img, idx) => {
+        const r = (img.width || 1) / (img.height || 1);
+        if (r < minRatio) {
+          minRatio = r;
+          portraitIdx = idx;
+        }
+      });
+      const portraitOnRight = portraitIdx === 2;
+      const portraitImg = images[portraitIdx];
+      const landscapeImgs = images.filter((_, idx) => idx !== portraitIdx);
+
+      if (!portraitOnRight) {
+        result.push(portraitImg, ...landscapeImgs);
+      } else {
+        result.push(...landscapeImgs, portraitImg);
+      }
+    } else {
+      result.push(...images);
+    }
+  }
+  return result;
+}
+
+/**
+ * Returns the first visible image of the gallery (the primary LCP candidate).
+ */
+export function getLcpImage(patterns: PatternDto[]): PatternImageDto | null {
+  const ordered = getGalleryImageOrder(patterns);
+  return ordered.length > 0 ? ordered[0] : null;
+}
+
+export const PageGallery: React.FC<PageGalleryProps> = ({
+  patterns,
+  className = '',
+  priorityCount = 2,
+}) => {
   const rawId = useId();
   const galleryId = `page-gallery-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
+
+  // Set of keys (imageId-order) for images that should be loaded eagerly with high priority
+  const priorityKeys = useMemo(() => {
+    const ordered = getGalleryImageOrder(patterns);
+    return new Set(ordered.slice(0, priorityCount).map((img) => `${img.imageId}-${img.order}`));
+  }, [patterns, priorityCount]);
 
   useEffect(() => {
     if (!patterns || patterns.length === 0) return;
@@ -45,30 +128,6 @@ export const PageGallery: React.FC<PageGalleryProps> = ({ patterns, className = 
     return null;
   }
 
-  // Normalize pattern to standard format
-  const normalizePattern = (p: PatternDto): PatternDto => {
-    const rawType = p.patternType ?? (p as any).PatternType;
-    let patternType: PatternType = PatternType.ROW;
-    if (rawType === PatternType.COLUMN || rawType === 1 || rawType === 'COLUMN' || rawType === 'Column') {
-      patternType = PatternType.COLUMN;
-    }
-
-    const rawImages = p.images || (p as any).Images || [];
-    const images: PatternImageDto[] = rawImages.map((img: any) => ({
-      order: img.order ?? img.Order ?? 0,
-      imageId: img.imageId || img.ImageId,
-      width: img.width ?? img.Width ?? 1200,
-      height: img.height ?? img.Height ?? 800,
-    })).sort((a: any, b: any) => a.order - b.order);
-
-    return {
-      id: p.id || (p as any).Id || String(Math.random()),
-      order: p.order ?? (p as any).Order ?? 0,
-      patternType,
-      images,
-    };
-  };
-
   // Render a single image item
   const renderImageItem = (
     img: PatternImageDto,
@@ -80,10 +139,12 @@ export const PageGallery: React.FC<PageGalleryProps> = ({ patterns, className = 
     const fullUrl = getFullImageUrl(img.imageId);
     const thumbUrl = getThumbnailUrl(img.imageId, width, height, 'md');
     const srcSet = getImageSrcSet(img.imageId, width, height);
+    const itemKey = `${img.imageId}-${img.order}`;
+    const isPriority = priorityKeys.has(itemKey);
 
     return (
       <div
-        key={`${img.imageId}-${img.order}`}
+        key={itemKey}
         className={`page-gallery__item ${itemClass}`}
         style={{
           aspectRatio: `${width} / ${height}`,
@@ -104,7 +165,9 @@ export const PageGallery: React.FC<PageGalleryProps> = ({ patterns, className = 
             srcSet={srcSet || undefined}
             sizes="(max-width: 768px) 100vw, 50vw"
             alt=""
-            loading="lazy"
+            loading={isPriority ? 'eager' : 'lazy'}
+            fetchPriority={isPriority ? 'high' : 'auto'}
+            decoding="async"
             className="page-gallery__img"
             onError={(e) => {
               const target = e.currentTarget;
