@@ -11,7 +11,7 @@ import { notifyError } from '../stores/notification';
  * In dev or SSR, falls back to PUBLIC_API_URL or http://localhost:5294.
  */
 export function getApiBaseUrl(): string {
-  if (import.meta.env.PROD && typeof window !== 'undefined' && window.location?.origin) {
+  if (import.meta.env.PROD && typeof window !== 'undefined' && window.location?.origin && !window.location.origin.includes("localhost")) {
     return window.location.origin.replace(/\/+$/, '').replace("https://", "https://api.").replace("www.", "");
   }
   return (import.meta.env.PUBLIC_API_URL || 'http://localhost:5294').replace(/\/+$/, '');
