@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^11.1.5",
-    "@astrojs/react": "^6.0.5",
+    "@astrojs/react": "^7.1.2",
     "@nanostores/react": "^2.0.1",
     "@react-oauth/google": "^0.13.5",
     "@tiptap/extension-link": "^3.32.0",
