@@ -81,7 +81,7 @@ export const ComicsList: React.FC<ComicsListProps> = ({
       </div>
 
       {/* Comics Titles List */}
-      {filteredComics.length > 0 ? (
+      {filteredComics.length > 0 || comics.length === 0 ? (
         <ul className="comics-list">
           {filteredComics.map((comic) => {
             const slug = comic.url.replace(/^\/+/, '').replace(/^comics\//, '');
