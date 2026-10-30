@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dotnet publish -c Release -o /var/www/berry-sites/api
+dotnet publish ./backend.csproj -c Release -o /var/www/berry-sites/api
