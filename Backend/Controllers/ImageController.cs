@@ -1,12 +1,10 @@
 using Backend.Data;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats.Webp;
 using Backend.Dtos;
 using Backend.ErrorHandling;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SkiaSharp;
 
 namespace Backend.Controllers;
 
@@ -51,9 +49,6 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
         Directory.CreateDirectory(thumbsDir);
         Directory.CreateDirectory(fullDir);
 
-        var webpFullEncoder = new WebpEncoder { Quality = 85, Method = WebpEncodingMethod.Level4 };
-        var webpThumbEncoder = new WebpEncoder { Quality = 75 };
-
         var newRecords = new List<Data.Image>();
         var savedFiles = new List<string>();
 
@@ -91,29 +86,26 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
 
                 var fullDiskPath = Path.Combine(fullDir, fullFileName);
 
-                using var stream = file.OpenReadStream();
-                using var image = await SixLabors.ImageSharp.Image.LoadAsync(stream, ct);
-
                 // 2. Process and save full-screen version (cap max edge to 2560px)
-                using (var fullClone = image.Clone(ctx =>
-                {
-                    if (image.Width > 2560 || image.Height > 2560)
-                    {
-                        ctx.Resize(new ResizeOptions
-                        {
-                            Size = new Size(2560, 2560),
-                            Mode = ResizeMode.Max
-                        });
-                    }
-                }))
-                {
-                    record.Width = image.Width;
-                    record.Height = image.Height;
+                using var stream = file.OpenReadStream();
+                using var image = SKBitmap.Decode(stream);
 
-                    await fullClone.SaveAsync(fullDiskPath, webpFullEncoder, ct);
-                    savedFiles.Add(fullDiskPath);
-                }
+                record.Width = image.Width;
+                record.Height = image.Height;
 
+                // 2.1 Process and save full-screen version (maximum edge: 2560px)
+                await SaveWebpAsync(
+                    image,
+                    fullDiskPath,
+                    maxDimension: 2560,
+                    quality: 85,
+                    allowUpscale: false,
+                    ct
+                );
+
+                savedFiles.Add(fullDiskPath);
+
+                // 2.2. Generate previews
                 var previewSizes = new (string Suffix, int MaxDimension)[]
                 {
                     ("sm", 500),
@@ -123,26 +115,29 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
 
                 foreach (var (suffix, maxDim) in previewSizes)
                 {
-                    if (image.Width <= maxDim && image.Height <= maxDim && suffix != "sm")
+                    // Skip previews that would be larger than the original,
+                    // except for "sm", which we always generate.
+                    if (image.Width <= maxDim &&
+                        image.Height <= maxDim &&
+                        suffix != "sm")
                     {
                         continue;
                     }
 
-                    string previewDiskPath = Path.Combine(thumbsDir, $"{record.Id}_{suffix}.webp");
+                    string previewDiskPath = Path.Combine(
+                        thumbsDir,
+                        $"{record.Id}_{suffix}.webp"
+                    );
 
-                    using (var thumbClone = image.Clone(ctx =>
-                    {
-                        ctx.Resize(new ResizeOptions
-                        {
-                            Size = new Size(maxDim, maxDim),
-                            Mode = ResizeMode.Max
-                        });
-                    }))
-                    {
-                        // Using lower quality/faster encoding for thumbs
-                        await thumbClone.SaveAsync(previewDiskPath, webpThumbEncoder, ct);
-                        savedFiles.Add(previewDiskPath);
-                    }
+                    await SaveWebpAsync(
+                        image,
+                        previewDiskPath,
+                        maxDimension: maxDim,
+                        quality: 75,
+                        allowUpscale: suffix == "sm",
+                        ct
+                    );
+                    savedFiles.Add(previewDiskPath);
                 }
                 newRecords.Add(record);
             }
@@ -214,6 +209,68 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
         catch (UnauthorizedAccessException)
         {
             // Log permission error
+        }
+    }
+    private static async Task SaveWebpAsync(
+        SKBitmap source,
+        string outputPath,
+        int maxDimension,
+        int quality,
+        bool allowUpscale,
+        CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+
+        var scale = (double)maxDimension /
+                    Math.Max(source.Width, source.Height);
+
+        if (!allowUpscale)
+            scale = Math.Min(1.0, scale);
+
+        int width = Math.Max(1, (int)Math.Round(source.Width * scale));
+        int height = Math.Max(1, (int)Math.Round(source.Height * scale));
+
+        SKBitmap? resized = null;
+
+        try
+        {
+            var bitmap = source;
+
+            if (width != source.Width || height != source.Height)
+            {
+                resized = source.Resize(
+                    new SKImageInfo(width, height),
+                    new SKSamplingOptions(
+                        SKFilterMode.Linear,
+                        SKMipmapMode.Linear
+                    )
+                ) ?? throw new InvalidOperationException(
+                    "Failed to resize image."
+                );
+
+                bitmap = resized;
+            }
+
+            using var skImage = SKImage.FromBitmap(bitmap);
+
+            using var encoded = skImage.Encode(
+                SKEncodedImageFormat.Webp,
+                quality
+            ) ?? throw new InvalidOperationException(
+                "Failed to encode WebP image."
+            );
+
+            ct.ThrowIfCancellationRequested();
+
+            await System.IO.File.WriteAllBytesAsync(
+                outputPath,
+                encoded.ToArray(),
+                ct
+            );
+        }
+        finally
+        {
+            resized?.Dispose();
         }
     }
 }
