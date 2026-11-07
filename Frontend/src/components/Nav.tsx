@@ -24,7 +24,7 @@ const defaultNavLinks: NavItem[] = [
   { href: '/comics', label: 'comics' },
   { href: '/illustration', label: 'illustration' },
   { href: '/process', label: 'process' },
-  { href: '/contact', label: 'contact' },
+  { href: '/#contact', label: 'contact' },
 ];
 
 export const Nav: React.FC<NavProps> = ({ currentPath, locale, isDomainScoped, links, top }) => {

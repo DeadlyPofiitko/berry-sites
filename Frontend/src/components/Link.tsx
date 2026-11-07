@@ -13,11 +13,18 @@ export interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>
   children?: React.ReactNode;
 }
 
-function scrollToTarget(hash: string, smooth: boolean = true): boolean {
-  if (typeof document === 'undefined') return false;
+// Global timestamp to suppress scroll-spy updates while programmatic smooth scrolling is in flight
+let programmaticScrollUntil = 0;
+
+function markProgrammaticScroll(durationMs: number = 1500) {
+  programmaticScrollUntil = Math.max(programmaticScrollUntil, Date.now() + durationMs);
+}
+
+function getTargetElement(hash: string): HTMLElement | null {
+  if (typeof document === 'undefined') return null;
 
   const cleanHash = hash.replace(/^#/, '');
-  if (!cleanHash) return false;
+  if (!cleanHash) return null;
 
   // 1. Direct ID lookup
   let target: HTMLElement | null = document.getElementById(cleanHash);
@@ -36,7 +43,16 @@ function scrollToTarget(hash: string, smooth: boolean = true): boolean {
     target = document.querySelector('h2');
   }
 
+  return target;
+}
+
+function scrollToTarget(hash: string, smooth: boolean = true): boolean {
+  const target = getTargetElement(hash);
+
   if (target) {
+    if (smooth) {
+      markProgrammaticScroll(1500);
+    }
     target.scrollIntoView({
       behavior: smooth ? 'smooth' : 'auto',
       block: 'start',
@@ -105,20 +121,40 @@ export const Link: React.FC<LinkProps> = ({
     };
   }, []);
 
-  // Handle hash scrolling if user landed directly on a URL with a hash
-  React.useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hash) {
-      const timer = setTimeout(() => {
-        scrollToTarget(window.location.hash, smoothScroll);
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [smoothScroll]);
-
   // Determine active status
   const [targetPathRaw, targetHashRaw] = resolvedHref.split('#');
   const targetPath = (targetPathRaw || '').replace(/\/$/, '') || '/';
   const targetHash = targetHashRaw ? `#${targetHashRaw}` : '';
+
+  // Handle hash scrolling if user landed directly on a URL with a hash
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !targetHash) return;
+    const currentPathname = window.location.pathname.replace(/\/$/, '') || '/';
+    if (currentPathname !== targetPath || window.location.hash !== targetHash) return;
+
+    markProgrammaticScroll(2000);
+    const t1 = setTimeout(() => {
+      scrollToTarget(targetHash, smoothScroll);
+    }, 100);
+
+    // Re-align after lazy images / layout shifts settle during initial cross-page scroll
+    const t2 = setTimeout(() => {
+      if (window.location.hash === targetHash) {
+        const el = getTargetElement(targetHash);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (Math.abs(rect.top) > 120) {
+            scrollToTarget(targetHash, smoothScroll);
+          }
+        }
+      }
+    }, 600);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [targetHash, targetPath, smoothScroll]);
 
   const isAutoActive = React.useMemo(() => {
     const activePath = currentUrl.pathname;
@@ -154,6 +190,7 @@ export const Link: React.FC<LinkProps> = ({
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (Date.now() < programmaticScrollUntil) return;
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             if (window.location.hash !== targetHash) {
