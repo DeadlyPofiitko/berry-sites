@@ -88,7 +88,7 @@
 }
 
 .page-gallery__item-link:hover .page-gallery__img {
-  transform: scale(1.025);
+  /* transform: scale(1.025); */
 }
 
 .page-gallery__item-hover {
