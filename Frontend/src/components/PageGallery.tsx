@@ -50,9 +50,11 @@ export const normalizePattern = (p: PatternDto): PatternDto => {
  */
 export function getGalleryImageOrder(patterns: PatternDto[]): PatternImageDto[] {
   if (!patterns || patterns.length === 0) return [];
+  const sortedPatterns = patterns
+    .map((p) => normalizePattern(p))
+    .sort((a, b) => a.order - b.order);
   const result: PatternImageDto[] = [];
-  for (const p of patterns) {
-    const norm = normalizePattern(p);
+  for (const norm of sortedPatterns) {
     const images = norm.images;
     if (images.length === 0) continue;
 
@@ -100,11 +102,21 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
   const galleryId = `page-gallery-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
 
+  const sortedPatterns = useMemo(
+    () =>
+      patterns
+        ? patterns
+            .map((p) => normalizePattern(p))
+            .sort((a, b) => a.order - b.order)
+        : [],
+    [patterns]
+  );
+
   // Set of keys (imageId-order) for images that should be loaded eagerly with high priority
   const priorityKeys = useMemo(() => {
-    const ordered = getGalleryImageOrder(patterns);
+    const ordered = getGalleryImageOrder(sortedPatterns);
     return new Set(ordered.slice(0, priorityCount).map((img) => `${img.imageId}-${img.order}`));
-  }, [patterns, priorityCount]);
+  }, [sortedPatterns, priorityCount]);
 
   useEffect(() => {
     if (!patterns || patterns.length === 0) return;
@@ -271,7 +283,7 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
 
     return (
       <div
-        key={pattern.order}
+        key={normalized.id}
         className={`page-gallery__column-pattern ${portraitOnRight ? 'page-gallery__column-pattern--right' : 'page-gallery__column-pattern--left'}`}
         style={{
           gridTemplateColumns: gridTemplate,
@@ -306,7 +318,7 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
 
   return (
     <div id={galleryId} className={`page-gallery ${className}`.trim()}>
-      {patterns.map((pattern) => {
+      {sortedPatterns.map((pattern) => {
         const isColumn =
           pattern.patternType === PatternType.COLUMN ||
           pattern.patternType === 1 ||
