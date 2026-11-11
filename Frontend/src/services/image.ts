@@ -111,10 +111,35 @@ export async function getAllImages(): Promise<BackendImage[]> {
   }
 }
 
+export interface DeleteImagePayload {
+  id: string;
+  replaceWithId?: string | null;
+  forced?: boolean;
+}
+
+export interface DeleteImageResult {
+  success: boolean;
+  errorMessage?: string;
+  requiresReplacement?: boolean;
+  usedInSections?: string;
+}
+
 /**
- * Deletes an image by ID via DELETE /image.
+ * Deletes an image via DELETE /image.
+ * Supports replacing pattern references with `replaceWithId` and forcing deletion when used in sections via `forced`.
  */
-export async function deleteImage(id: string): Promise<boolean> {
+export async function deleteImage(
+  payloadOrId: DeleteImagePayload | string
+): Promise<DeleteImageResult> {
+  const payload: DeleteImagePayload =
+    typeof payloadOrId === "string"
+      ? { id: payloadOrId, replaceWithId: null, forced: false }
+      : {
+          id: payloadOrId.id,
+          replaceWithId: payloadOrId.replaceWithId ?? null,
+          forced: Boolean(payloadOrId.forced),
+        };
+
   try {
     const res = await fetch(`${getApiBaseUrl()}/image`, {
       method: "DELETE",
@@ -122,7 +147,7 @@ export async function deleteImage(id: string): Promise<boolean> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id }),
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) {
@@ -136,15 +161,42 @@ export async function deleteImage(id: string): Promise<boolean> {
         const text = await res.text();
         if (text) errorMsg = text;
       }
+
+      const lower = errorMsg.toLowerCase();
+      if (lower.includes("cannot delete used image")) {
+        notifyError(errorMsg);
+        return {
+          success: false,
+          errorMessage: errorMsg,
+          requiresReplacement: true,
+        };
+      }
+
+      if (lower.startsWith("section(s):") || lower.includes("section(s):")) {
+        notifyError(`Image is used in ${errorMsg}`);
+        return {
+          success: false,
+          errorMessage: errorMsg,
+          usedInSections: errorMsg,
+        };
+      }
+
       notifyError(errorMsg);
-      return false;
+      return {
+        success: false,
+        errorMessage: errorMsg,
+      };
     }
 
     notifySuccess("Image deleted successfully");
-    return true;
+    return { success: true };
   } catch (e) {
-    notifyError("Network error while deleting image");
-    return false;
+    const errorMsg = "Network error while deleting image";
+    notifyError(errorMsg);
+    return {
+      success: false,
+      errorMessage: errorMsg,
+    };
   }
 }
 
