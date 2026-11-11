@@ -143,13 +143,14 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
     const itemKey = `${img.imageId}-${img.order}`;
     const isPriority = priorityKeys.has(itemKey);
 
+    const isRowItem = itemClass.includes('page-gallery__item--row');
+
     return (
       <div
         key={itemKey}
         className={`page-gallery__item ${itemClass}`}
         style={{
           aspectRatio: `${width} / ${height}`,
-          maxHeight: '70vh',
           ...containerStyle,
         }}
       >
@@ -171,7 +172,7 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
             fetchPriority={isPriority ? 'high' : 'auto'}
             decoding="async"
             className="page-gallery__img"
-            style={{ maxHeight: '70vh' }}
+            style={isRowItem ? { maxHeight: '70vh' } : undefined}
             onError={(e) => {
               const target = e.currentTarget;
               if (target.src !== fullUrl) {
@@ -220,6 +221,7 @@ export const PageGallery: React.FC<PageGalleryProps> = ({
             {
               flex: `${ratio} ${ratio} 0%`,
               minWidth: 0,
+              maxHeight: '70vh',
               maxWidth: `calc(70vh * ${ratio})`,
             },
             'page-gallery__item--row'
