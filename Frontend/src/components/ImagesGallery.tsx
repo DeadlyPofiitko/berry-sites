@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import PhotoSwipe from 'photoswipe';
 import 'photoswipe/style.css';
-import { Button, Modal, Badge } from './ui';
+import { Button, Modal, Badge, Input } from './ui';
 import { getAllImages, deleteImage as deleteImageService, type BackendImage } from '../services/image';
 import './ImagesGallery.css';
 
@@ -72,9 +72,33 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
   const [loading, setLoading] = useState(true);
   const [imageToDelete, setImageToDelete] = useState<BackendImage | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [forceDelete, setForceDelete] = useState(false);
+  const [replaceWithId, setReplaceWithId] = useState<string | null>(null);
+  const [needsReplacement, setNeedsReplacement] = useState(false);
+  const [usedInSectionsError, setUsedInSectionsError] = useState<string | null>(null);
+  const [replaceSearch, setReplaceSearch] = useState('');
 
   const galleryContainerId = 'photoswipe-images-gallery-grid';
   const lightboxRef = useRef<PhotoSwipeLightbox | null>(null);
+
+  const handleOpenDeleteModal = (img: BackendImage) => {
+    setImageToDelete(img);
+    setForceDelete(false);
+    setReplaceWithId(null);
+    setNeedsReplacement(false);
+    setUsedInSectionsError(null);
+    setReplaceSearch('');
+  };
+
+  const handleCloseDeleteModal = () => {
+    if (deleting) return;
+    setImageToDelete(null);
+    setForceDelete(false);
+    setReplaceWithId(null);
+    setNeedsReplacement(false);
+    setUsedInSectionsError(null);
+    setReplaceSearch('');
+  };
 
   // Load all images from API
   const fetchImages = useCallback(async () => {
@@ -117,22 +141,44 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
   // Handle image deletion confirmation
   const handleConfirmDelete = async () => {
     if (!imageToDelete || deleting) return;
+    if (needsReplacement && !replaceWithId) return;
 
     setDeleting(true);
     try {
-      const success = await deleteImageService(imageToDelete.id);
-      if (success) {
+      const result = await deleteImageService({
+        id: imageToDelete.id,
+        replaceWithId,
+        forced: forceDelete,
+      });
+
+      if (result.success) {
         setImages((prev) => {
           const updated = prev.filter((img) => img.id !== imageToDelete.id);
           onImagesChange?.(updated);
           return updated;
         });
-        setImageToDelete(null);
+        handleCloseDeleteModal();
+      } else {
+        if (result.usedInSections) {
+          setUsedInSectionsError(result.usedInSections);
+        }
+        if (result.requiresReplacement) {
+          setNeedsReplacement(true);
+        }
       }
     } finally {
       setDeleting(false);
     }
   };
+
+  const replacementCandidates = imageToDelete
+    ? images.filter(
+        (img) =>
+          img.id !== imageToDelete.id &&
+          (!replaceSearch.trim() ||
+            img.name.toLowerCase().includes(replaceSearch.trim().toLowerCase()))
+      )
+    : [];
 
   return (
     <div className={`images-gallery ${className}`.trim()}>
@@ -253,7 +299,7 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  setImageToDelete(img);
+                  handleOpenDeleteModal(img);
                 }}
                 title={`Delete ${img.name}`}
                 aria-label={`Delete ${img.name}`}
@@ -268,9 +314,9 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
       {/* Delete Confirmation Modal */}
       <Modal
         opened={Boolean(imageToDelete)}
-        onClose={() => !deleting && setImageToDelete(null)}
+        onClose={handleCloseDeleteModal}
         title="Delete Image"
-        size="sm"
+        size={needsReplacement ? 'lg' : 'sm'}
       >
         {imageToDelete && (
           <div className="images-gallery__delete-modal">
@@ -301,12 +347,103 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
               </p>
             </div>
 
+            {usedInSectionsError && (
+              <div className="images-gallery__section-warning">
+                <strong>Used in section content:</strong> {usedInSectionsError}
+                <p className="images-gallery__section-warning-sub">
+                  Check &ldquo;Force delete&rdquo; below if you want to delete this image even though it is referenced in a section.
+                </p>
+              </div>
+            )}
+
+            <label className="images-gallery__force-checkbox">
+              <input
+                type="checkbox"
+                checked={forceDelete}
+                disabled={deleting}
+                onChange={(e) => setForceDelete(e.target.checked)}
+              />
+              <span>
+                Force delete (delete even if this image is used inside a section)
+              </span>
+            </label>
+
+            {needsReplacement && (
+              <div className="images-gallery__replace-section">
+                <div className="images-gallery__replace-header">
+                  <span className="images-gallery__replace-title">
+                    This image is used in a gallery pattern — select a replacement image:
+                  </span>
+                  <Input
+                    placeholder="Search replacement image..."
+                    value={replaceSearch}
+                    onChange={(e) => setReplaceSearch(e.target.value)}
+                    className="images-gallery__replace-search"
+                  />
+                </div>
+
+                {images.filter((img) => img.id !== imageToDelete.id).length === 0 ? (
+                  <div className="images-gallery__replace-empty">
+                    No other images available to replace this one. Please upload another image first.
+                  </div>
+                ) : replacementCandidates.length === 0 ? (
+                  <div className="images-gallery__replace-empty">
+                    No images match your search.
+                  </div>
+                ) : (
+                  <div className="images-gallery__replace-grid">
+                    {replacementCandidates.map((candidate) => {
+                      const isSelected = replaceWithId === candidate.id;
+                      return (
+                        <button
+                          key={candidate.id}
+                          type="button"
+                          className={`images-gallery__replace-card ${
+                            isSelected ? 'images-gallery__replace-card--selected' : ''
+                          }`}
+                          onClick={() => setReplaceWithId(candidate.id)}
+                          disabled={deleting}
+                          title={`Replace with ${candidate.name}`}
+                        >
+                          <div className="images-gallery__replace-thumb-wrap">
+                            <img
+                              src={candidate.thumbnailUrl}
+                              alt={candidate.name}
+                              className="images-gallery__replace-thumb"
+                              loading="lazy"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                if (target.src !== candidate.fullUrl) {
+                                  target.src = candidate.fullUrl;
+                                }
+                              }}
+                            />
+                            {isSelected && (
+                              <span className="images-gallery__replace-badge">Selected</span>
+                            )}
+                          </div>
+                          <span className="images-gallery__replace-name" title={candidate.name}>
+                            {candidate.name}
+                          </span>
+                          {candidate.width > 0 && candidate.height > 0 && (
+                            <span className="images-gallery__replace-dim">
+                              {candidate.width} × {candidate.height}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="images-gallery__delete-actions">
               <Button
                 variant="default"
                 size="sm"
                 disabled={deleting}
-                onClick={() => setImageToDelete(null)}
+                onClick={handleCloseDeleteModal}
               >
                 Cancel
               </Button>
@@ -315,9 +452,10 @@ export const ImagesGallery: React.FC<ImagesGalleryProps> = ({
                 color="red"
                 size="sm"
                 loading={deleting}
+                disabled={needsReplacement && !replaceWithId}
                 onClick={handleConfirmDelete}
               >
-                Delete Image
+                {needsReplacement ? 'Replace & Delete' : 'Delete Image'}
               </Button>
             </div>
           </div>
