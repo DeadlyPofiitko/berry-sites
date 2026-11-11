@@ -1,6 +1,7 @@
 using Backend.Data;
 using Backend.Dtos;
 using Backend.ErrorHandling;
+using Google.Apis.Util;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -175,8 +176,31 @@ public class ImageController(AppDbContext appDbContext) : ControllerBase
     [HttpDelete()]
     public async Task<IActionResult> DeleteImage(DeleteImageDto dto, CancellationToken ct = default)
     {
-        var img = await appDbContext.Images.FirstOrDefaultAsync(x => x.Id == dto.Id)
+        var img = await appDbContext.Images.FirstOrDefaultAsync(x => x.Id == dto.Id, ct)
             ?? throw new DomainException("Unknown image", 400);
+
+        var UsedInPatterns = await appDbContext.ImagePatterns.Where(x => x.ImageId == dto.Id).ToListAsync(ct);
+        var Contents = await appDbContext.SectionContents.Select(x => new {x.Json, x.Section.Name}).ToListAsync(ct);
+
+        var ContentsWithImage = Contents.Where(x => x.Json.Contains(dto.Id.ToString())).Select(x => x.Name).Distinct().ToList();
+
+        if (ContentsWithImage.Count > 0 && !dto.Forced)
+            throw new DomainException($"Section(s): {string.Join(", ", ContentsWithImage)}", 400);
+
+        if (UsedInPatterns.Count != 0)
+        {
+            if (dto.ReplaceWithId is not Guid replacementId)
+                throw new DomainException("Cannot delete used image", 400);
+            
+            if (replacementId == dto.Id) 
+                throw new DomainException("Cannot replace image with itself", 400);
+            
+            if (!await appDbContext.Images.AnyAsync(x => x.Id == replacementId, ct))
+                throw new DomainException("Unknown replace id", 400);
+
+            foreach (var pattern in UsedInPatterns)
+                pattern.ImageId = replacementId;
+        }
 
         var webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
         var fullDiskPath = Path.Combine(webRoot, "uploads", "full", $"{img.Id}_full.webp");

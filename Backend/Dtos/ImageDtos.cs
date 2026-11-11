@@ -10,5 +10,7 @@ public record BatchUploadDto(
 );
 
 public record DeleteImageDto(
-    Guid Id
+    Guid Id,
+    Guid? ReplaceWithId,
+    bool Forced
 );
